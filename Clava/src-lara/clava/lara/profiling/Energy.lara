@@ -14,11 +14,18 @@ aspectdef MeasureEnergy
 	
 	// Build message
 	if(message === undefined) {
-		message = "spent ";
-		
-		if($jp.name != undefined) {
-			message = $jp.name + " " + message;
+		// Try to get a name
+		var name = $jp.name;
+		if(name === undefined) {
+			message = "energy: ";
+		} else {
+			message = name + " energy: ";
 		}
+		
+		
+		//if($jp.name != undefined) {
+		//	message = $jp.name + " " + message;
+		//}
 	}
 
 	// Add include

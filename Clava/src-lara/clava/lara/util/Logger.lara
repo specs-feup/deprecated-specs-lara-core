@@ -1,29 +1,16 @@
-/*
-aspectdef NewLogger
-	input isGlobal=false, filename end
-	output logger end
-	
-	// Create logger
-	logger = new Logger(isGlobal, filename);
-
-
-end
-*/
-aspectdef LoggerInsert
-	input $jp, code, insertBefore=false end
-	
-	select $jp end
-	apply
-		if(insertBefore) {
-			$jp.insert before code;
-		} else {
-			$jp.insert after code;
-		}
-	end
-	
-end
-
+/**
+ * Logger object, for printing/saving information.
+ */
 function Logger(isGlobal, filename) {
+  
+  if(isGlobal) {
+	println("[Logger-warning] global Logger is not implemented yet, reverting to local Logger");
+	isGlobal = false;
+  }
+  
+  this.currentElements = [];
+  this.functionsSetup = new Set();
+  
   this.isGlobal = isGlobal === undefined ? false : isGlobal;
   this.filename = filename;
   this.isGlobalFn = isGlobalFn;
@@ -31,9 +18,19 @@ function Logger(isGlobal, filename) {
   this.addDouble = addDouble;
   this.log = log;
   
-  this.currentElements = [];
+  // Private functions
+  this._warn = _warn;
+  this._setup = _setup;
+  this._nextId = _nextId();
 }
 
+// Global id for loggers
+var clava_logger_id = 0;
+function _nextId() {
+	var id = clava_logger_id;
+	clava_logger_id++;
+	return id;
+}
 
 function isGlobalFn() {  
     println("Is Global Fn:" + this.isGlobal);
@@ -50,14 +47,28 @@ function addDouble(expr) {
 }
 
 function log($jp, insertBefore) {
+	
+	// Verify that $jp is inside a function
+	$function = $jp.ancestor("function");
+	if($function === undefined) {
+		_warn("Given joinpoint ("+$jp+") is not inside a function, returning");
+		return;
+	}
+	
+    if(!this._setup($function)) {
+		return;
+	}
+
 	if(insertBefore === undefined) {
 		insertBefore = false;
 	}
 	
 	if(this.currentElements.length === 0) {
-		println("[Logger] Nothing to log, call add() first");
+		_info("Nothing to log, call add() first");
 		return;
 	}
+	
+	var loggerName = "logger_" + this._nextId();
 	
 	// Create code from elements
 	var code = "logger.msg(" + this.currentElements.join(" ,") + ");";
@@ -70,6 +81,47 @@ function log($jp, insertBefore) {
 	
 	// Clear internal state
 	this.currentElements = [];
+}
+
+
+/**** PRIVATE METHODS ****/
+
+function _warn(message) {
+		println("[Logger Warning] " + message);
+}
+
+function _info(message) {
+		println("[Logger] " + message);
+}
+
+/**
+ Sets up the code for the Logger in the function that is called
+ */
+function _setup($function) {
+
+	// Check if setup was already called for this function
+	var declaration = $function.declaration;
+	if(this.functionsSetup.has(declaration)) {
+		return true;
+	} else {
+		this.functionsSetup.add(declaration);
+	}
+	
+	var $file = $function.ancestor('file');
+	
+	// C not supported yet
+	if(!$file.isCxx) {
+		_warn("Cannot log on file " + $file.name + ", not yet implemented for C files, only C++");
+		return false;
+	}
+	
+	
+	// Add include to Logger
+	$file.addInclude("SpecsLogger.h", false);
+	
+	// Add declaration of correct logger
+
+	return true;
 }
 
 
