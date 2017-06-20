@@ -1,7 +1,7 @@
 /**
  * Logger object, for printing/saving information.
  */
-function Logger(isGlobal, filename) {
+var Logger = function(isGlobal, filename) {
   
   if(isGlobal) {
 	println("[Logger-warning] global Logger is not implemented yet, reverting to local Logger");
@@ -9,10 +9,12 @@ function Logger(isGlobal, filename) {
   }
   
   this.currentElements = [];
-  this.functionsSetup = new Set();
+  //this.functionsSetup = new Set();
+  this.functionMap = {}; 
   
   this.isGlobal = isGlobal === undefined ? false : isGlobal;
   this.filename = filename;
+  /*
   this.isGlobalFn = isGlobalFn;
   this.add = add;
   this.addDouble = addDouble;
@@ -21,32 +23,41 @@ function Logger(isGlobal, filename) {
   // Private functions
   this._warn = _warn;
   this._setup = _setup;
-  this._nextId = _nextId();
-}
+  this._nextId = _nextId;
+  */
+};
 
 // Global id for loggers
 var clava_logger_id = 0;
-function _nextId() {
+
+Logger.prototype._nextLoggerName = function() {
+	var id = clava_logger_id;
+	clava_logger_id++;
+	return "clava_logger_" + id;
+}
+
+/*
+Logger.prototype._nextId = function() {
 	var id = clava_logger_id;
 	clava_logger_id++;
 	return id;
 }
-
-function isGlobalFn() {  
+*/
+Logger.prototype.isGlobalFn = function() {  
     println("Is Global Fn:" + this.isGlobal);
 }
 
-function add(message) {
+Logger.prototype.add = function(message) {
 	this.currentElements.push("\"" + message + "\"");
 	return this;
 }
 
-function addDouble(expr) {
+Logger.prototype.addDouble = function(expr) {
 	this.currentElements.push(expr);
 	return this;
 }
 
-function log($jp, insertBefore) {
+Logger.prototype.log = function($jp, insertBefore) {
 	
 	// Verify that $jp is inside a function
 	$function = $jp.ancestor("function");
@@ -55,7 +66,9 @@ function log($jp, insertBefore) {
 		return;
 	}
 	
-    if(!this._setup($function)) {
+	
+	var loggerName = this._setup($function);
+    if(loggerName === undefined) {
 		return;
 	}
 
@@ -68,14 +81,14 @@ function log($jp, insertBefore) {
 		return;
 	}
 	
-	var loggerName = "logger_" + this._nextId();
+	
 	
 	// Create code from elements
-	var code = "logger.msg(" + this.currentElements.join(" ,") + ");";
-	println("Code:" + code);
+	var code = loggerName + ".msg(" + this.currentElements.join(" ,") + ");";
+	//println("Code:" + code);
 	
 	//call LoggerInsert($jp, code, insertBefore);
-	$jp.exec insertAfter(code);
+	$jp.insertAfter(code);
 	
 	
 	
@@ -86,42 +99,73 @@ function log($jp, insertBefore) {
 
 /**** PRIVATE METHODS ****/
 
-function _warn(message) {
+Logger.prototype._warn = function(message) {
 		println("[Logger Warning] " + message);
 }
 
-function _info(message) {
+Logger.prototype._info = function(message) {
 		println("[Logger] " + message);
 }
 
 /**
  Sets up the code for the Logger in the function that is called
  */
-function _setup($function) {
+Logger.prototype._setup = function($function) {
 
 	// Check if setup was already called for this function
 	var declaration = $function.declaration;
+	var loggerName = this.functionMap[declaration];
+/*
+	map[myKey1] = myObj1;
+map[myKey2] = myObj2;
+
+function get(k) {
+    return map[k];
+}
+*/
+	if(loggerName !== undefined) {
+		return loggerName;
+	} else {
+		loggerName = this._nextLoggerName();
+		this.functionMap[declaration] = loggerName;
+	}
+	
+	/*
 	if(this.functionsSetup.has(declaration)) {
 		return true;
 	} else {
 		this.functionsSetup.add(declaration);
 	}
+	*/
 	
 	var $file = $function.ancestor('file');
 	
 	// C not supported yet
 	if(!$file.isCxx) {
 		_warn("Cannot log on file " + $file.name + ", not yet implemented for C files, only C++");
-		return false;
+		return undefined;
 	}
 	
 	
 	// Add include to Logger
 	$file.addInclude("SpecsLogger.h", false);
 	
+	// Get correct logger
+	var loggerDecl = undefined;
+	
+	// If filename use FileLogger 
+	if(this.filename !== undefined) {
+		loggerDecl = "FileLogger " + loggerName + "(\"" + this.filename + "\");";
+	}
+	// Otherwise, use ConsoleLogger
+	else {
+		loggerDecl = "ConsoleLogger " + loggerName + ";";
+	}
+	
 	// Add declaration of correct logger
+	$function.body.insertBegin(loggerDecl);
 
-	return true;
+	return loggerName;
 }
 
 

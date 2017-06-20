@@ -1,4 +1,4 @@
-import lara.util.Logger;
+//import lara.util.Logger;
 
 /**
  * Adds calls to RAPL between a section of code
