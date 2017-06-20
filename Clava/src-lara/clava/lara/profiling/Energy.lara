@@ -4,12 +4,12 @@
  * Adds calls to RAPL between a section of code
  */
 aspectdef MeasureEnergy
-	input $jp, message end
+	input $jp, message, filename end
 
 	//call loggerOut : NewLogger();
 	//var logger = loggerOut.logger;
 
-	var logger = new Logger();
+	var logger = new Logger(false, filename);
 
 	
 	// Build message
@@ -19,7 +19,7 @@ aspectdef MeasureEnergy
 		if(name === undefined) {
 			message = "energy: ";
 		} else {
-			message = name + " energy: ";
+			message = $jp.joinpointType + " " + name + " energy: ";
 		}
 		
 		
