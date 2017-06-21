@@ -1,7 +1,8 @@
 //import lara.util.Logger;
 
+
 /**
- * Adds calls to RAPL between a section of code
+ * Adds calls to RAPL between a section of code, measure is in Joules
  */
 aspectdef MeasureEnergy
 	input $jp, message, filename end
@@ -17,9 +18,9 @@ aspectdef MeasureEnergy
 		// Try to get a name
 		var name = $jp.name;
 		if(name === undefined) {
-			message = "energy: ";
+			message = "energy (J): ";
 		} else {
-			message = $jp.joinpointType + " " + name + " energy: ";
+			message = $jp.joinpointType + " \"" + name + "\" energy (J): ";
 		}
 		
 		
@@ -40,12 +41,13 @@ aspectdef MeasureEnergy
 	apply
 		$jp.insert before "rapl_monitor_start();";
 		
-		var energyVar = "energy"; // + "_" + nextId(); Needs a way to have a "unique id" (global counter?)
+		var id = _nextClavaEnergyId();
+		var energyVar = "clava_energy_" + id;
 		$raplResult = AstFactory.exprLiteral("rapl_monitor_report()");
 		$raplResultDecl = AstFactory.varDecl(energyVar, $raplResult);
 		
 		// Build message
-		logger.add(message).addDouble(energyVar).add("J");
+		logger.add(message).addDouble(energyVar);
 				
 		$jp.exec insertAfter($raplResultDecl);
 		logger.log($raplResultDecl);
@@ -56,3 +58,14 @@ aspectdef MeasureEnergy
 	//$jp.toStmt;
 	
 end
+
+// Global id for timers
+var _clava_energy_id = 0;
+
+function _nextClavaEnergyId() {
+	var id = _clava_energy_id;
+	_clava_energy_id++;
+	return id;
+}
+
+
