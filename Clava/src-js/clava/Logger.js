@@ -3,6 +3,7 @@
  */
 var Logger = function(isGlobal, filename) {
   
+  //(new lara$profiling$Energy$EnergyTest()).call();
   if(isGlobal) {
 	println("[Logger-warning] global Logger is not implemented yet, reverting to local Logger");
 	isGlobal = false;
@@ -48,6 +49,11 @@ Logger.prototype.isGlobalFn = function() {
 }
 
 Logger.prototype.add = function(message) {
+	// Do not push message if empty
+	if(message === "") {
+		return this;
+	}
+	
 	this.currentElements.push("\"" + message + "\"");
 	return this;
 }
