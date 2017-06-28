@@ -1,3 +1,4 @@
+import lara.util.Logger;
 
 /**
  * Adds calls to a timer between a section of code. By default, measure is in milliseconds.
