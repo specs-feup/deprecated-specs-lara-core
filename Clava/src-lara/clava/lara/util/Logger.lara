@@ -90,7 +90,7 @@ Logger.prototype.log = function($jp, insertBefore) {
 	
 	
 	// Create code from elements
-	var code = loggerName + ".msg(" + this.currentElements.join(" ,") + ");";
+	var code = loggerName + ".msg(" + this.currentElements.join(", ") + ");";
 	//println("Code:" + code);
 	
 	//call LoggerInsert($jp, code, insertBefore);
@@ -119,7 +119,7 @@ Logger.prototype._info = function(message) {
 Logger.prototype._setup = function($function) {
 
 	// Check if setup was already called for this function
-	var declaration = $function.declaration;
+	var declaration = $function.declaration(true);
 	var loggerName = this.functionMap[declaration];
 /*
 	map[myKey1] = myObj1;
