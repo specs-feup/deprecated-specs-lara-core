@@ -15,35 +15,10 @@ var Logger = function(isGlobal, filename) {
   
   this.isGlobal = isGlobal === undefined ? false : isGlobal;
   this.filename = filename;
-  /*
-  this.isGlobalFn = isGlobalFn;
-  this.add = add;
-  this.addDouble = addDouble;
-  this.log = log;
-  
-  // Private functions
-  this._warn = _warn;
-  this._setup = _setup;
-  this._nextId = _nextId;
-  */
+
 };
 
-// Global id for loggers
-var clava_logger_id = 0;
 
-Logger.prototype._nextLoggerName = function() {
-	var id = clava_logger_id;
-	clava_logger_id++;
-	return "clava_logger_" + id;
-}
-
-/*
-Logger.prototype._nextId = function() {
-	var id = clava_logger_id;
-	clava_logger_id++;
-	return id;
-}
-*/
 Logger.prototype.isGlobalFn = function() {  
     println("Is Global Fn:" + this.isGlobal);
 }
@@ -96,12 +71,9 @@ Logger.prototype.log = function($jp, insertBefore) {
 	//call LoggerInsert($jp, code, insertBefore);
 	if(insertBefore) {
 		$jp.insertBefore(code);
-	}
-	else {
+	}else {
 		$jp.insertAfter(code);
 	}
-	
-	
 	
 	
 	// Clear internal state
@@ -127,28 +99,14 @@ Logger.prototype._setup = function($function) {
 	// Check if setup was already called for this function
 	var declaration = $function.declaration(true);
 	var loggerName = this.functionMap[declaration];
-/*
-	map[myKey1] = myObj1;
-map[myKey2] = myObj2;
 
-function get(k) {
-    return map[k];
-}
-*/
 	if(loggerName !== undefined) {
 		return loggerName;
 	} else {
-		loggerName = this._nextLoggerName();
+		loggerName = IdGenerator.next("clava_logger_");
 		this.functionMap[declaration] = loggerName;
 	}
-	
-	/*
-	if(this.functionsSetup.has(declaration)) {
-		return true;
-	} else {
-		this.functionsSetup.add(declaration);
-	}
-	*/
+
 	
 	var $file = $function.ancestor('file');
 	
