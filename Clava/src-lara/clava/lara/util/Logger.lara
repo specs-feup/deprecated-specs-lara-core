@@ -110,15 +110,10 @@ Logger.prototype._setup = function($function) {
 	
 	var $file = $function.ancestor('file');
 	
-	// C not supported yet
-	if(!$file.isCxx) {
-		_warn("Cannot log on file " + $file.name + ", not yet implemented for C files, only C++");
-		return undefined;
+	if($file.isCxx) {
+		// Add include to Logger for Cpp only
+		$file.addInclude("SpecsLogger.h", false);
 	}
-	
-	
-	// Add include to Logger
-	$file.addInclude("SpecsLogger.h", false);
 	
 	// Get correct logger
 	var loggerDecl = undefined;
