@@ -6,12 +6,10 @@ var IdGenerator = {
 
 IdGenerator.next = function(key) {
 
-	key = key || "";
-/*
-	if(key ===undefined) {
+	if(key === undefined) {
 		key = "";
 	}
-*/
+
 	var currentId = this.idCounter[key];
 
 	if(currentId === undefined) {
