@@ -41,8 +41,8 @@ aspectdef MeasureEnergy
 	apply
 		$jp.insert before "rapl_monitor_start();";
 		
-		var id = _nextClavaEnergyId();
-		var energyVar = "clava_energy_" + id;
+		var energyVar = IdGenerator.next("clava_energy_");
+		
 		$raplResult = AstFactory.exprLiteral("rapl_monitor_report()");
 		$raplResultDecl = AstFactory.varDecl(energyVar, $raplResult);
 		
@@ -58,14 +58,5 @@ aspectdef MeasureEnergy
 	//$jp.toStmt;
 	
 end
-
-// Global id for timers
-var _clava_energy_id = 0;
-
-function _nextClavaEnergyId() {
-	var id = _clava_energy_id;
-	_clava_energy_id++;
-	return id;
-}
 
 
