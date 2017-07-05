@@ -20,6 +20,7 @@ import org.lara.interpreter.weaver.utils.LaraResourceProvider;
  *
  */
 public enum JsApiResource implements LaraResourceProvider {
+    ID_GENERATOR("objects/IdGenerator.js"),
     DEBUG("Debug.js"),
     IO("Io.js"),
     LARA_CORE("LaraCore.js"),
