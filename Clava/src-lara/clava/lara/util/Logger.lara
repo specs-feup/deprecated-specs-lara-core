@@ -23,19 +23,31 @@ Logger.prototype.isGlobalFn = function() {
     println("Is Global Fn:" + this.isGlobal);
 }
 
-Logger.prototype.add = function(message) {
+//Accepts a c printf format type (e.g. %d, %s, %c, ...) default is %s
+Logger.prototype.append = function(message, type) {
 	// Do not push message if empty
 	if(message === "") {
 		return this;
 	}
 	
-	this.currentElements.push("\"" + message + "\"");
+	// Check type, if undefined use default (%s)
+	type = type === undefined ? "%s" : type;
+	
+	// Add quotes for string output
+	if(type == "%s"){
+		message = "\"" + message + "\"";
+	} else if( type == "%c"){
+		//Add ' instead of " for char, even in C++
+		message = '\'' + message + '\'';
+	} 
+	
+	this.currentElements.push({content: message, type:type});
 	return this;
 }
 
-Logger.prototype.addDouble = function(expr) {
-	this.currentElements.push(expr);
-	return this;
+
+Logger.prototype.appendDouble = function(expr) {
+	return this.append(expr, "%f");
 }
 
 Logger.prototype.log = function($jp, insertBefore) {
@@ -62,11 +74,26 @@ Logger.prototype.log = function($jp, insertBefore) {
 		return;
 	}
 	
+	var $file = $function.ancestor('file');
 	
+	var code;
 	
-	// Create code from elements
-	var code = loggerName + ".msg(" + this.currentElements.join(", ") + ");";
-	//println("Code:" + code);
+	//C and C++ support for file log implementation
+	if($file.isCxx){//C++
+		// Create code from elements
+		code = loggerName + ".msg(" + this.currentElements.map(function(element){
+			return element.content;
+		}).join(",") + ");";
+	} else {//C
+		code = "printf(\"" +
+		this.currentElements.map(function(element){
+			return element.type;
+		}).join("") + "\"," +
+		this.currentElements.map(function(element){
+			return element.content;
+		}).join(",") + ");";
+	}
+	
 	
 	//call LoggerInsert($jp, code, insertBefore);
 	if(insertBefore) {
@@ -74,7 +101,6 @@ Logger.prototype.log = function($jp, insertBefore) {
 	}else {
 		$jp.insertAfter(code);
 	}
-	
 	
 	// Clear internal state
 	this.currentElements = [];
