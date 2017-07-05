@@ -50,6 +50,10 @@ Logger.prototype.appendDouble = function(expr) {
 	return this.append(expr, "%f");
 }
 
+Logger.prototype.appendInt = function(expr) {
+	return this.append(expr, "%d");
+}
+
 Logger.prototype.log = function($jp, insertBefore) {
 	
 	// Verify that $jp is inside a function
