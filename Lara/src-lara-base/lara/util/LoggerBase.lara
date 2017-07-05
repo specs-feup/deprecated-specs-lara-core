@@ -15,17 +15,6 @@ var Logger = function(isGlobal, filename) {
   
   this.isGlobal = isGlobal === undefined ? false : isGlobal;
   this.filename = filename;
-  /*
-  this.isGlobalFn = isGlobalFn;
-  this.add = add;
-  this.addDouble = addDouble;
-  this.log = log;
-  
-  // Private functions
-  this._warn = _warn;
-  this._setup = _setup;
-  this._nextId = _nextId;
-  */
 };
 
 // Global id for loggers
