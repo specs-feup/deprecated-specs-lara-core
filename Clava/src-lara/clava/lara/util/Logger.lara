@@ -157,14 +157,16 @@ Logger.prototype._info = function(message) {
 		println("[Logger] " + message);
 }
 
-// Receive an element{content, type} and return the content with or without quotation marks, accordingly
-Logger.prototype._getPrintableContent = function(element) {
-		var enumType = this.Type;
-		var content = element.content;
-		if(element.type === enumType.NORMAL) {
-			content = "\"" + content + "\"";
-		}
-		return content;
+// Receives an element{content, type} and return the content with or without quotation marks, accordingly
+Logger.prototype._getPrintableContentC_Cxx = function(element) {
+	var enumType = this.Type;
+	var content = element.content;
+	if(element.type === enumType.NORMAL || element.type === enumType.STRING ) {
+		content = "\"" + content + "\"";
+	}else if(element.type === enumType.CHAR){
+		content = "\'" + content + "\'";
+	}
+	return content;
 }
 
 Logger.prototype._log_cxx = function($file, $function) {
@@ -178,6 +180,7 @@ Logger.prototype._log_cxx = function($file, $function) {
 	// Create code from elements
 	var code = loggerName + ".msg(" + this.currentElements.map(function(element){
 		return this._getPrintableContent(element);
+		return this._getPrintableContentC_Cxx(element);
 	}, this).join(", ") + ");";
 	
 	return code;
