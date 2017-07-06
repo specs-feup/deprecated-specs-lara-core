@@ -147,6 +147,15 @@ Logger.prototype._info = function(message) {
 		println("[Logger] " + message);
 }
 
+// Receive an element{content, type} and return the content with or without quotation marks, accordingly
+Logger.prototype._getPrintableContent = function(element) {
+		var enumType = this.Type;
+		var content = element.content;
+		if(element.type === enumType.NORMAL) {
+			content = "\"" + content + "\"";
+		}
+		return content;
+}
 
 Logger.prototype._log_cxx = function($file, $function) {
 	
@@ -156,22 +165,10 @@ Logger.prototype._log_cxx = function($file, $function) {
 		return;
 	}
 	
-	//var $file = $function.ancestor('file');
-	
-	//var code;
-	
-	//C and C++ support for file log implementation
-
 	// Create code from elements
-	var enumType = this.Type;
 	var code = loggerName + ".msg(" + this.currentElements.map(function(element){
-		var content = element.content;
-		if(element.type === enumType.NORMAL) {
-			content = "\"" + content + "\"";
-		}
-		return content;
-	}).join(", ") + ");";
-
+		return this._getPrintableContent(element);
+	}, this).join(", ") + ");";
 	
 	return code;
 }
@@ -224,8 +221,8 @@ Logger.prototype._log_c = function($file, $function) {
 			return element.type;
 		}).join("") + "\"," +
 		this.currentElements.map(function(element){
-			return element.content;
-		}).join(",") + ");";
+			return this._getPrintableContent(element);
+		}, this).join(",") + ");";
 		
 		return code;
 }
@@ -234,7 +231,6 @@ Logger.prototype._log_c = function($file, $function) {
  * Sets up the code for the Logger in the file that is called
  */
 Logger.prototype._setup_c = function($file, $function) {
-
 
 	// Add stdio.h if console, not implemented yet for file
 	println("Filename:" + this.filename);
