@@ -78,6 +78,10 @@ Logger.prototype.append = function(expr) {
 	return this._append_private(expr, this.Type.NORMAL);
 }
 
+Logger.prototype.ln = function(expr) {
+	return this._append_private("\\n", this.Type.NORMAL);
+}
+
 Logger.prototype.appendDouble = function(expr) {
 	return this._append_private(expr, this.Type.DOUBLE);
 }
@@ -235,8 +239,10 @@ Logger.prototype._log_c = function($file, $function) {
 				return element.content;
 			}
 			return enumType.CFormat[element.type];
-		}, this).join("") + "\"," +
-		this.currentElements
+		}, this).join("") + "\"";
+		
+		
+		var valuesCode = this.currentElements
 		// Filter only non-NORMAL types
 		.filter(function(element) {
 			var enumType = this.Type;
@@ -245,7 +251,14 @@ Logger.prototype._log_c = function($file, $function) {
 		.map(function(element){
 			// Even though _getPrintableContentC_Cxx tests an always unmet condition (type === NORMAL) it represents a reusable piece of code for both C and C++
 			return this._getPrintableContentC_Cxx(element);
-		}, this).join(",") + ");";
+		}, this).join(", ");
+
+		if(valuesCode.length > 0) {
+			code = code + ", " + valuesCode;
+		}
+
+
+		code = code + ");";
 		
 		return code;
 }
@@ -256,7 +269,6 @@ Logger.prototype._log_c = function($file, $function) {
 Logger.prototype._setup_c = function($file, $function) {
 
 	// Add stdio.h if console, not implemented yet for file
-	println("Filename:" + this.filename);
 	if(this.filename !== undefined) {
 		this._warn('Not implemented for C files when a "filename" is defined');
 		return false;
