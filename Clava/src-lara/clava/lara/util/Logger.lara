@@ -22,10 +22,12 @@ var Logger = function(isGlobal, filename) {
 // Using enum pattern described here: https://stijndewitt.com/2014/01/26/enums-in-javascript/
 Logger.prototype.Type = {
 	NORMAL: 1,
-	INT: 2,
+	INT: 	2,
 	DOUBLE: 3,
 	STRING: 4,
-	CHAR: 5,
+	CHAR: 	5,
+	HEX:	6,
+	OCTAL:	7,
 }
 
 
@@ -80,6 +82,14 @@ Logger.prototype.appendString = function(expr) {
 
 Logger.prototype.appendChar = function(expr) {
 	return this._append_private(expr, this.Type.CHAR);
+}
+
+Logger.prototype.appendHex = function(expr) {
+	return this._append_private(expr, this.Type.HEX);
+}
+
+Logger.prototype.appendOctal = function(expr) {
+	return this._append_private(expr, this.Type.OCTAL);
 }
 
 Logger.prototype.log = function($jp, insertBefore) {
