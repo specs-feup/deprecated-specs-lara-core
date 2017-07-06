@@ -1,46 +1,4 @@
-/**
- * Logger object, for printing/saving information.
- */
-var Logger = function(isGlobal, filename) {
-  
-  //(new lara$profiling$Energy$EnergyTest()).call();
-  if(isGlobal) {
-	println("[Logger-warning] global Logger is not implemented yet, reverting to local Logger");
-	isGlobal = false;
-  }
-  
-  this.currentElements = [];
-  
-  //this.functionsSetup = new Set();
-  this.functionMap = {}; 
-  
-  this.isGlobal = isGlobal === undefined ? false : isGlobal;
-  this.filename = filename;
-
-};
-
-// Using enum pattern described here: https://stijndewitt.com/2014/01/26/enums-in-javascript/
-Logger.prototype.Type = {
-	NORMAL: 1,
-	INT: 	2,
-	DOUBLE: 3,
-	STRING: 4,
-	CHAR: 	5,
-	HEX:	6,
-	OCTAL:	7,
-/*
-	// C printf format
-	CFormat: {
-		1: "%s",
-		2: "%d",
-		3: "%f",
-		4: "%s",
-		5: "%c",
-		6: "%x",
-		7: "%o"
-	}
-*/	
-}
+import lara.util.LoggerBase;
 
 // C printf format
 Logger.prototype.CFormat = {
@@ -81,71 +39,12 @@ Logger.prototype.CFormat = {
 }
 */
 
-Logger.prototype.isGlobalFn = function() {  
-    println("Is Global Fn:" + this.isGlobal);
-}
 
-// Private append function
-Logger.prototype._append_private = function(message, type) {
-	// Do not push message if empty
-	if(message === "") {
-		return this;
-	}
-	
-	// Force type to be defined
-	if(type === undefined) {
-		throw "Logger: type must be defined";
-	}
-	//type = type === undefined
-	/*
-	// Check type, if undefined use default (%s)
-	type = type === undefined ? "%s" : type;
-	
-	// Add quotes for string output
-	if(type == "%s"){
-		message = "\"" + message + "\"";
-	} else if( type == "%c"){
-		//Add ' instead of " for char, even in C++
-		message = '\'' + message + '\'';
-	} 
-	*/
-	
-	this.currentElements.push({content: message, type:type});
-	return this;
-}
-
-Logger.prototype.append = function(expr) {
-	return this._append_private(expr, this.Type.NORMAL);
-}
-
-Logger.prototype.ln = function(expr) {
-	return this._append_private("\\n", this.Type.NORMAL);
-}
-
-Logger.prototype.appendDouble = function(expr) {
-	return this._append_private(expr, this.Type.DOUBLE);
-}
-
-Logger.prototype.appendInt = function(expr) {
-	return this._append_private(expr, this.Type.INT);
-}
-
-Logger.prototype.appendString = function(expr) {
-	return this._append_private(expr, this.Type.STRING);
-}
-
-Logger.prototype.appendChar = function(expr) {
-	return this._append_private(expr, this.Type.CHAR);
-}
-
-Logger.prototype.appendHex = function(expr) {
-	return this._append_private(expr, this.Type.HEX);
-}
-
-Logger.prototype.appendOctal = function(expr) {
-	return this._append_private(expr, this.Type.OCTAL);
-}
-
+/**
+ * Adds code that prints the message built up to that point with the append() functions.
+ *
+ * TODO: Improve this comment, add JSDoc tags
+ */
 Logger.prototype.log = function($jp, insertBefore) {
 	
 	// Verify that $jp is inside a function
@@ -192,14 +91,6 @@ Logger.prototype.log = function($jp, insertBefore) {
 
 
 /**** PRIVATE METHODS ****/
-
-Logger.prototype._warn = function(message) {
-		println("[Logger Warning] " + message);
-}
-
-Logger.prototype._info = function(message) {
-		println("[Logger] " + message);
-}
 
 // Receives an element{content, type} and return the content with or without quotation marks, accordingly
 Logger.prototype._getPrintableContentC_Cxx = function(element) {
