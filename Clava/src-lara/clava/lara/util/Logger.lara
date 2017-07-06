@@ -179,7 +179,6 @@ Logger.prototype._log_cxx = function($file, $function) {
 	
 	// Create code from elements
 	var code = loggerName + ".msg(" + this.currentElements.map(function(element){
-		return this._getPrintableContent(element);
 		return this._getPrintableContentC_Cxx(element);
 	}, this).join(", ") + ");";
 	
@@ -232,10 +231,20 @@ Logger.prototype._log_c = function($file, $function) {
 		var code = "printf(\"" +
 		this.currentElements.map(function(element){
 			var enumType = this.Type;
+			if(element.type === enumType.NORMAL){
+				return element.content;
+			}
 			return enumType.CFormat[element.type];
 		}, this).join("") + "\"," +
-		this.currentElements.map(function(element){
-			return this._getPrintableContent(element);
+		this.currentElements
+		// Filter only non-NORMAL types
+		.filter(function(element) {
+			var enumType = this.Type;
+			return (element.type !== enumType.NORMAL);
+		}, this)
+		.map(function(element){
+			// Even though _getPrintableContentC_Cxx tests an always unmet condition (type === NORMAL) it represents a reusable piece of code for both C and C++
+			return this._getPrintableContentC_Cxx(element);
 		}, this).join(",") + ");";
 		
 		return code;
