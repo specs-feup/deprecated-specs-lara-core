@@ -1,14 +1,16 @@
 import lara.util.LoggerBase;
 
 // C printf format
+
+
 Logger.prototype.CFormat = {
-	1 : undefined,
-	2 : "%d",
-	3 : "%f",
-	4 : "%s",
-	5 : "%c",
-	6 : "%x",
-	7 : "%o",
+    1: undefined,
+    2: "%d",
+    3: "%f",
+    4: "%s",
+    5: "%c",
+    6: "%x",
+    7: "%o",
 }
 
 /*
@@ -29,13 +31,13 @@ Logger.prototype.CFormat =  mapKeys(this.Type, {
 */
 /*
 Logger.prototype.CFormat = {
-	[Type.NORMAL] : undefined,
-	this.TYPE.INT : "%d",
-	this.TYPE.DOUBLE : "%f",
-	this.TYPE.STRING : "%s",
-	this.TYPE.CHAR : "%c",
-	this.TYPE.HEX : "%x",
-	this.TYPE.OCTAL : "%o",
+    [Type.NORMAL]: undefined,
+    [Type.INT]: "%d",
+    this.TYPE.DOUBLE: "%f",
+    this.TYPE.STRING: "%s",
+    this.TYPE.CHAR: "%c",
+    this.TYPE.HEX: "%x",
+    this.TYPE.OCTAL: "%o",
 }
 */
 
@@ -46,78 +48,78 @@ Logger.prototype.CFormat = {
  * TODO: Improve this comment, add JSDoc tags
  */
 Logger.prototype.log = function($jp, insertBefore) {
-	
-	// Verify that $jp is inside a function
-	$function = $jp.ancestor("function");
-	if($function === undefined) {
-		_warn("Given joinpoint ("+$jp+") is not inside a function, returning");
-		return;
-	}
-	
-	
-	if(this.currentElements.length === 0) {
-		_info("Nothing to log, call append() first");
-		return;
-	}
 
-	
-	var $file = $function.ancestor('file');
-	
-	var code = undefined;
-	if($file.isCxx) {
-		code = this._log_cxx($file, $function);
-	} else {
-		code = this._log_c($file, $function);
-	}
-	
-	if(code === undefined) {
-		return;
-	}
-		
-	if(insertBefore === undefined) {
-		insertBefore = false;
-	}
-	
-	//call LoggerInsert($jp, code, insertBefore);
-	if(insertBefore) {
-		$jp.insertBefore(code);
-	}else {
-		$jp.insertAfter(code);
-	}
-	
-	// Clear internal state
-	this.currentElements = [];
+    // Verify that $jp is inside a function
+    $function = $jp.ancestor("function");
+    if ($function === undefined) {
+        _warn("Given joinpoint (" + $jp + ") is not inside a function, returning");
+        return;
+    }
+
+
+    if (this.currentElements.length === 0) {
+        _info("Nothing to log, call append() first");
+        return;
+    }
+
+
+    var $file = $function.ancestor('file');
+
+    var code = undefined;
+    if ($file.isCxx) {
+        code = this._log_cxx($file, $function);
+    } else {
+        code = this._log_c($file, $function);
+    }
+
+    if (code === undefined) {
+        return;
+    }
+
+    if (insertBefore === undefined) {
+        insertBefore = false;
+    }
+
+    //call LoggerInsert($jp, code, insertBefore);
+    if (insertBefore) {
+        $jp.insertBefore(code);
+    } else {
+        $jp.insertAfter(code);
+    }
+
+    // Clear internal state
+    this.currentElements = [];
 }
 
 
 /**** PRIVATE METHODS ****/
 
-// Receives an element{content, type} and return the content with or without quotation marks, accordingly
-Logger.prototype._getPrintableContentC_Cxx = function(element) {
-	var enumType = this.Type;
-	var content = element.content;
-	if(element.type === enumType.NORMAL || element.type === enumType.STRING ) {
-		content = "\"" + content + "\"";
-	}else if(element.type === enumType.CHAR){
-		content = "\'" + content + "\'";
-	}
-	return content;
+// Receives an element{content, type} and returns the content with or without quotation marks, accordingly
+Logger.prototype._getPrintableContent = function(element) {
+    var enumType = this.Type;
+    var content = element.content;
+    if (element.type === enumType.NORMAL || element.type === enumType.STRING) {
+        content = "\"" + content + "\"";
+    } else if (element.type === enumType.CHAR) {
+        content = "\'" + content + "\'";
+    }
+    return content;
 }
 
 Logger.prototype._log_cxx = function($file, $function) {
-	
-	var loggerName = this._setup_cxx($file, $function);
-    
-	if(loggerName === undefined) {
-		return;
-	}
-	
-	// Create code from elements
-	var code = loggerName + ".msg(" + this.currentElements.map(function(element){
-		return this._getPrintableContentC_Cxx(element);
-	}, this).join(", ") + ");";
-	
-	return code;
+
+    var loggerName = this._setup_cxx($file, $function);
+
+    if (loggerName === undefined) {
+        return;
+    }
+
+    // Create code from elements
+    var code = loggerName + ".msg(" + this.currentElements.map(function(element) {
+        return this._getPrintableContent(element);
+    }, this).join(", ") + ");";
+
+    return code;
 }
 
 /**
@@ -125,74 +127,74 @@ Logger.prototype._log_cxx = function($file, $function) {
  */
 Logger.prototype._setup_cxx = function($file, $function) {
 
-	// Check if setup was already called for this function
-	var declaration = $function.declaration(true);
-	var loggerName = this.functionMap[declaration];
-    
-	if(loggerName !== undefined) {
-		return loggerName;
-	} else {
-		loggerName = IdGenerator.next("clava_logger_");
-		this.functionMap[declaration] = loggerName;
-	}
+    // Check if setup was already called for this function
+    var declaration = $function.declaration(true);
+    var loggerName = this.functionMap[declaration];
 
-	// Add include to Logger for Cpp only
-	$file.addInclude("SpecsLogger.h", false);
-	
-	// Get correct logger
-	var loggerDecl = undefined;
-	
-	// If filename use FileLogger 
-	if(this.filename !== undefined) {
-		loggerDecl = "FileLogger " + loggerName + "(\"" + this.filename + "\");";
-	}
-	// Otherwise, use ConsoleLogger
-	else {
-		loggerDecl = "ConsoleLogger " + loggerName + ";";
-	}
-	
-	// Add declaration of correct logger
-	$function.body.insertBegin(loggerDecl);	
-	
-	return loggerName;
+    if (loggerName !== undefined) {
+        return loggerName;
+    } else {
+        loggerName = IdGenerator.next("clava_logger_");
+        this.functionMap[declaration] = loggerName;
+    }
+
+    // Add include to Logger for Cpp only
+    $file.addInclude("SpecsLogger.h", false);
+
+    // Get correct logger
+    var loggerDecl = undefined;
+
+    // If filename use FileLogger 
+    if (this.filename !== undefined) {
+        loggerDecl = "FileLogger " + loggerName + "(\"" + this.filename + "\");";
+    }
+    // Otherwise, use ConsoleLogger
+    else {
+        loggerDecl = "ConsoleLogger " + loggerName + ";";
+    }
+
+    // Add declaration of correct logger
+    $function.body.insertBegin(loggerDecl);
+
+    return loggerName;
 }
 
 Logger.prototype._log_c = function($file, $function) {
 
-		if(!this._setup_c($file, $function)) {
-			return;
-		}
+    if (!this._setup_c($file, $function)) {
+        return;
+    }
 
-		var code = "printf(\"" +
-		this.currentElements.map(function(element){
-			var enumType = this.Type;
-			if(element.type === enumType.NORMAL){
-				return element.content;
-			}
-			//return enumType.CFormat[element.type];
-			return this.CFormat[element.type];
-		}, this).join("") + "\"";
-		
-		
-		var valuesCode = this.currentElements
-		// Filter only non-NORMAL types
-		.filter(function(element) {
-			var enumType = this.Type;
-			return (element.type !== enumType.NORMAL);
-		}, this)
-		.map(function(element){
-			// Even though _getPrintableContentC_Cxx tests an always unmet condition (type === NORMAL) it represents a reusable piece of code for both C and C++
-			return this._getPrintableContentC_Cxx(element);
-		}, this).join(", ");
-
-		if(valuesCode.length > 0) {
-			code = code + ", " + valuesCode;
-		}
+    var code = "printf(\"" +
+        this.currentElements.map(function(element) {
+            var enumType = this.Type;
+            if (element.type === enumType.NORMAL) {
+                return element.content;
+            }
+            //return enumType.CFormat[element.type];
+            return this.CFormat[element.type];
+        }, this).join("") + "\"";
 
 
-		code = code + ");";
-		
-		return code;
+    var valuesCode = this.currentElements
+        // Filter only non-NORMAL types
+        .filter(function(element) {
+            var enumType = this.Type;
+            return (element.type !== enumType.NORMAL);
+        }, this)
+        .map(function(element) {
+            // Even though _getPrintableContent tests an always unmet condition (type === NORMAL) it represents a reusable piece of code for both C and C++
+            return this._getPrintableContent(element);
+        }, this).join(", ");
+
+    if (valuesCode.length > 0) {
+        code = code + ", " + valuesCode;
+    }
+
+
+    code = code + ");";
+
+    return code;
 }
 
 /**
@@ -200,15 +202,13 @@ Logger.prototype._log_c = function($file, $function) {
  */
 Logger.prototype._setup_c = function($file, $function) {
 
-	// Add stdio.h if console, not implemented yet for file
-	if(this.filename !== undefined) {
-		this._warn('Not implemented for C files when a "filename" is defined');
-		return false;
-	}
-	
-	$file.addInclude("stdio.h", true);
+    // Add stdio.h if console, not implemented yet for file
+    if (this.filename !== undefined) {
+        this._warn('Not implemented for C files when a "filename" is defined');
+        return false;
+    }
 
-	return true;
+    $file.addInclude("stdio.h", true);
+
+    return true;
 }
-
-
