@@ -28,6 +28,16 @@ Logger.prototype.Type = {
 	CHAR: 	5,
 	HEX:	6,
 	OCTAL:	7,
+	// C printf format
+	CFormat: {
+		1: "%s",
+		2: "%d",
+		3: "%f",
+		4: "%s",
+		5: "%c",
+		6: "%x",
+		7: "%o"
+	}
 }
 
 
@@ -218,8 +228,9 @@ Logger.prototype._log_c = function($file, $function) {
 
 		var code = "printf(\"" +
 		this.currentElements.map(function(element){
-			return element.type;
-		}).join("") + "\"," +
+			var enumType = this.Type;
+			return enumType.CFormat[element.type];
+		}, this).join("") + "\"," +
 		this.currentElements.map(function(element){
 			return this._getPrintableContent(element);
 		}, this).join(",") + ");";
