@@ -30,6 +30,18 @@ Logger.prototype.Type = {
     OCTAL: 7,
 }
 
+/**
+ * Used for both C and Java printf functions
+ */
+Logger.prototype.printfFormat = {
+    1: undefined,
+    2: "%d",
+    3: "%f",
+    4: "%s",
+    5: "%c",
+    6: "%x",
+    7: "%o",
+}
 Logger.prototype.isGlobalFn = function() {
     println("Is Global Fn:" + this.isGlobal);
 }
@@ -96,6 +108,7 @@ Logger.prototype._logSetup = function($jp, insertBefore) {
     return $function;
 }
 
+
 // Private append function
 Logger.prototype._append_private = function(message, type) {
     // Do not push message if empty
@@ -118,4 +131,53 @@ Logger.prototype._warn = function(message) {
 
 Logger.prototype._info = function(message) {
     println("[Logger] " + message);
+}
+
+// Receives an element{content, type} and returns the content with or without quotation marks, accordingly
+Logger.prototype._getPrintableContent = function(element) {
+    var enumType = this.Type;
+    var content = element.content;
+    if (element.type === enumType.NORMAL || element.type === enumType.STRING) {
+        content = "\"" + content + "\"";
+    } else if (element.type === enumType.CHAR) {
+        content = "\'" + content + "\'";
+    }
+    return content;
+}
+
+/**
+ * generates printf like code for c and java, 
+ * @param printFunctionName the name of the function to use (printf for C, System.out.println for Java)
+ */
+Logger.prototype._printfFormat = function(printFunctionName) {
+    // Create code from elements
+    var code = printFunctionName + "(\"" +
+        this.currentElements.map(function(element) {
+            var enumType = this.Type;
+            if (element.type === enumType.NORMAL) {
+                return element.content;
+            }
+            //return enumType.printfFormat[element.type];
+            return this.printfFormat[element.type];
+        }, this).join("") + "\"";
+
+
+    var valuesCode = this.currentElements
+        // Filter only non-NORMAL types
+        .filter(function(element) {
+            var enumType = this.Type;
+            return (element.type !== enumType.NORMAL);
+        }, this)
+        .map(function(element) {
+            // Even though _getPrintableContent tests an always unmet condition (type === NORMAL) it represents a reusable piece of code for both C and C++
+            return this._getPrintableContent(element);
+        }, this).join(", ");
+
+    if (valuesCode.length > 0) {
+        code = code + ", " + valuesCode;
+    }
+
+
+    code = code + ");";
+    return code;
 }
