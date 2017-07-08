@@ -6,5 +6,24 @@ import lara.util.LoggerBase;
  * TODO: Improve this comment, add JSDoc tags
  */
 Logger.prototype.log = function($jp, insertBefore) {
-	throw "Logger.log: not yet implemented";
+    //throw "Logger.log: not yet implemented for Kadabra";
+    var $function = 0;
+
+    /*this._logSetup($jp, insertBefore);
+    if ($function === undefined) {
+        return;
+    }*/
+
+    var code = this._printfFormat("System.out.printf");
+    if (code === undefined) {
+        return;
+    }
+
+    //call LoggerInsert($jp, code, insertBefore);
+    this.insertBefore = this.insertBefore ? "before" : "after";
+    $jp.insert(this.insertBefore, code);
+
+    // Clear internal state
+    this.currentElements = [];
+    return this;
 }
