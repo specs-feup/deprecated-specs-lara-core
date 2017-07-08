@@ -3,15 +3,6 @@ import lara.util.LoggerBase;
 // C printf format
 
 
-Logger.prototype.CFormat = {
-    1: undefined,
-    2: "%d",
-    3: "%f",
-    4: "%s",
-    5: "%c",
-    6: "%x",
-    7: "%o",
-}
 
 /*
 // Taken from here: https://stackoverflow.com/questions/21346967/using-value-of-enum-as-key-in-another-enum-in-javascript
@@ -24,13 +15,13 @@ function mapKeys(object, keyMapping) {
 }
 
 
-Logger.prototype.CFormat =  mapKeys(this.Type, {
+Logger.prototype.printfFormat =  mapKeys(this.Type, {
 	NORMAL: undefined,
 	INT: "%d"
 })
 */
 /*
-Logger.prototype.CFormat = {
+Logger.prototype.printfFormat = {
     [Type.NORMAL]: undefined,
     [Type.INT]: "%d",
     this.TYPE.DOUBLE: "%f",
@@ -80,17 +71,6 @@ Logger.prototype.log = function($jp, insertBefore) {
 
 /**** PRIVATE METHODS ****/
 
-// Receives an element{content, type} and returns the content with or without quotation marks, accordingly
-Logger.prototype._getPrintableContent = function(element) {
-    var enumType = this.Type;
-    var content = element.content;
-    if (element.type === enumType.NORMAL || element.type === enumType.STRING) {
-        content = "\"" + content + "\"";
-    } else if (element.type === enumType.CHAR) {
-        content = "\'" + content + "\'";
-    }
-    return content;
-}
 
 Logger.prototype._log_cxx = function($file, $function) {
 
@@ -151,36 +131,7 @@ Logger.prototype._log_c = function($file, $function) {
         return;
     }
 
-    var code = "printf(\"" +
-        this.currentElements.map(function(element) {
-            var enumType = this.Type;
-            if (element.type === enumType.NORMAL) {
-                return element.content;
-            }
-            //return enumType.CFormat[element.type];
-            return this.CFormat[element.type];
-        }, this).join("") + "\"";
-
-
-    var valuesCode = this.currentElements
-        // Filter only non-NORMAL types
-        .filter(function(element) {
-            var enumType = this.Type;
-            return (element.type !== enumType.NORMAL);
-        }, this)
-        .map(function(element) {
-            // Even though _getPrintableContent tests an always unmet condition (type === NORMAL) it represents a reusable piece of code for both C and C++
-            return this._getPrintableContent(element);
-        }, this).join(", ");
-
-    if (valuesCode.length > 0) {
-        code = code + ", " + valuesCode;
-    }
-
-
-    code = code + ");";
-
-    return code;
+    return this._printfFormat("printf");
 }
 
 /**
