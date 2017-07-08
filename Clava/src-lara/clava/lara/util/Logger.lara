@@ -41,27 +41,16 @@ Logger.prototype.CFormat = {
 }
 */
 
-
 /**
  * Adds code that prints the message built up to that point with the append() functions.
  *
  * TODO: Improve this comment, add JSDoc tags
  */
 Logger.prototype.log = function($jp, insertBefore) {
-
-    // Verify that $jp is inside a function
-    $function = $jp.ancestor("function");
-    if ($function === undefined) {
-        _warn("Given joinpoint (" + $jp + ") is not inside a function, returning");
+    var $function = undefined;
+    if (($function = this._logSetup($jp, insertBefore)) === undefined) {
         return;
     }
-
-
-    if (this.currentElements.length === 0) {
-        _info("Nothing to log, call append() first");
-        return;
-    }
-
 
     var $file = $function.ancestor('file');
 
@@ -76,12 +65,8 @@ Logger.prototype.log = function($jp, insertBefore) {
         return;
     }
 
-    if (insertBefore === undefined) {
-        insertBefore = false;
-    }
-
     //call LoggerInsert($jp, code, insertBefore);
-    if (insertBefore) {
+    if (this.insertBefore) {
         $jp.insertBefore(code);
     } else {
         $jp.insertAfter(code);
@@ -89,6 +74,7 @@ Logger.prototype.log = function($jp, insertBefore) {
 
     // Clear internal state
     this.currentElements = [];
+    return this;
 }
 
 
