@@ -71,6 +71,31 @@ Logger.prototype.appendOctal = function(expr) {
 
 /**** PRIVATE METHODS ****/
 
+
+/**
+ * Checks the initial constrains before executing the actual log (ancestor function, minimum of elements to log, defines the value of insertBefore)
+ * Should be called on the beggining of each implementation of log
+ * 
+ * @return undefined on failure and a $function instance if successful
+ */
+Logger.prototype._logSetup = function($jp, insertBefore) {
+    // Verify that $jp is inside a function
+    $function = $jp.ancestor("function");
+
+    if ($function === undefined) {
+        _warn("Given joinpoint (" + $jp + ") is not inside a function, returning");
+        return undefined;
+    }
+
+    if (this.currentElements.length === 0) {
+        _info("Nothing to log, call append() first");
+        return undefined;
+    }
+
+    this.insertBefore = (insertBefore === undefined) ? false : insertBefore;
+    return $function;
+}
+
 // Private append function
 Logger.prototype._append_private = function(message, type) {
     // Do not push message if empty
