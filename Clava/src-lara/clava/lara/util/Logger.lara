@@ -47,8 +47,8 @@ Logger.prototype.CFormat = {
  * TODO: Improve this comment, add JSDoc tags
  */
 Logger.prototype.log = function($jp, insertBefore) {
-    var $function = undefined;
-    if (($function = this._logSetup($jp, insertBefore)) === undefined) {
+    var $function = this._logSetup($jp, insertBefore);
+    if ($function === undefined) {
         return;
     }
 
