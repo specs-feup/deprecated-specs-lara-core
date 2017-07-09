@@ -38,7 +38,7 @@ Logger.prototype.printfFormat = {
  * TODO: Improve this comment, add JSDoc tags
  */
 Logger.prototype.log = function($jp, insertBefore) {
-    var $function = this._logSetup($jp, insertBefore);
+    var $function = this._logSetupCxx($jp, insertBefore);
     if ($function === undefined) {
         return;
     }
@@ -71,6 +71,29 @@ Logger.prototype.log = function($jp, insertBefore) {
 
 /**** PRIVATE METHODS ****/
 
+/**
+ * Checks the initial constrains before executing the actual log (ancestor function, minimum of elements to log, defines the value of insertBefore)
+ * Should be called on the beggining of each implementation of log
+ * 
+ * @return undefined on failure and a $function instance if successful
+ */
+Logger.prototype._logSetupCxx = function($jp, insertBefore) {
+    // Verify that $jp is inside a function
+    $function = $jp.ancestor("function");
+
+    if ($function === undefined) {
+        _warn("Given joinpoint (" + $jp + ") is not inside a function, returning");
+        return undefined;
+    }
+
+    if (this.currentElements.length === 0) {
+        _info("Nothing to log, call append() first");
+        return undefined;
+    }
+
+    this.insertBefore = (insertBefore === undefined) ? false : insertBefore;
+    return $function;
+}
 
 Logger.prototype._log_cxx = function($file, $function) {
 
