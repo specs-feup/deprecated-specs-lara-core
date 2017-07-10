@@ -21,6 +21,8 @@ import org.lara.interpreter.weaver.utils.LaraResourceProvider;
  */
 public enum ClavaCoreApiResource implements LaraResourceProvider {
 
+    WEAVER("Weaver.lara"),
+
     LOGGER("util/Logger.lara"),
 
     ENERGY("profiling/Energy.lara"),

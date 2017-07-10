@@ -1,0 +1,21 @@
+import lara.Weaver;
+
+var Clava = {};
+
+
+Clava.infoProjectDependency = function(projectName, repositoryUrl) {
+	if(projectName === undefined) {
+		println("Clava.infoProjectDependency: projectName is undefined");
+		return;
+	}
+	
+	var message = "Weaved code has dependency to project " + projectName;
+	if(repositoryUrl !== undefined) {
+		message = message + " which can be found at " + repositoryUrl;
+	}
+	
+	call MessageToUser(message);
+};
+
+
+

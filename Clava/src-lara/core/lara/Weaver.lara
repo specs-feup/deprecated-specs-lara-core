@@ -1,3 +1,7 @@
+/**
+ * ASPECTS 
+ */
+
 aspectdef Rebuild
 	select program end
 	apply
@@ -13,3 +17,8 @@ aspectdef MessageToUser
 		$program.exec messageToUser(message);
 	end
 end
+
+
+
+
+
