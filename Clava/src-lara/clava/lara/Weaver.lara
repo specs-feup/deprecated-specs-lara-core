@@ -1,0 +1,15 @@
+aspectdef Rebuild
+	select program end
+	apply
+		$program.exec rebuild();
+	end
+end
+
+aspectdef MessageToUser
+	input message end
+	
+	select program end
+	apply
+		$program.exec messageToUser(message);
+	end
+end
