@@ -1,45 +1,26 @@
 import lara.util.LoggerBase;
 import clava.Clava;
 
-// C printf format
 
+/**
+ * If enabled, uses the SpecsLogger library for the C++ code.
+ */
+//Logger.prototype.useSpecsLogger = true;
 
-
-/*
-// Taken from here: https://stackoverflow.com/questions/21346967/using-value-of-enum-as-key-in-another-enum-in-javascript
-function mapKeys(object, keyMapping) {
-  var mapped = {};
-  for (var key in keyMapping) {
-    mapped[object[key]] = keyMapping[key];
-  }
-  return mapped;
-}
-
-
-Logger.prototype.printfFormat =  mapKeys(this.Type, {
-	NORMAL: undefined,
-	INT: "%d"
-})
-*/
-/*
-Logger.prototype.printfFormat = {
-    [Type.NORMAL]: undefined,
-    [Type.INT]: "%d",
-    this.TYPE.DOUBLE: "%f",
-    this.TYPE.STRING: "%s",
-    this.TYPE.CHAR: "%c",
-    this.TYPE.HEX: "%x",
-    this.TYPE.OCTAL: "%o",
-}
-*/
-
+ 
 /**
  * Adds code that prints the message built up to that point with the append() functions.
  *
  * TODO: Improve this comment, add JSDoc tags
  */
 Logger.prototype.log = function($jp, insertBefore) {
-    var $function = this._logSetupCxx($jp, insertBefore);
+
+	if($jp === undefined) {
+		_warn("Given join point is undefined");
+		return;
+	}
+
+    var $function = this._logSetup($jp, insertBefore);
     if ($function === undefined) {
         return;
     }
@@ -78,7 +59,7 @@ Logger.prototype.log = function($jp, insertBefore) {
  * 
  * @return undefined on failure and a $function instance if successful
  */
-Logger.prototype._logSetupCxx = function($jp, insertBefore) {
+Logger.prototype._logSetup = function($jp, insertBefore) {
     // Verify that $jp is inside a function
     $function = $jp.ancestor("function");
 
@@ -98,11 +79,22 @@ Logger.prototype._logSetupCxx = function($jp, insertBefore) {
 
 Logger.prototype._log_cxx = function($file, $function) {
 
-    var loggerName = this._setup_cxx($file, $function);
+	if(Clava.useSpecsLogger) {
+		return this._log_cxx_specslogger($file, $function);
+	} else {
+		return this._log_cxx_stdcpp($file, $function);
+	}
 
+}
+
+Logger.prototype._log_cxx_specslogger = function($file, $function) {
+    var loggerName = this._setup_cxx_specslogger($file, $function);
+
+	/*
     if (loggerName === undefined) {
         return;
     }
+	*/
 
     // Create code from elements
     var code = loggerName + ".msg(" + this.currentElements.map(function(element) {
@@ -115,11 +107,20 @@ Logger.prototype._log_cxx = function($file, $function) {
 /**
  * Sets up the code for the Logger in the file and function that is called
  */
-Logger.prototype._setup_cxx = function($file, $function) {
+Logger.prototype._setup_cxx_specslogger = function($file, $function) {
 
 	// Warn user about dependency to SpecsLogger library
 	Clava.infoProjectDependency("SpecsLogger", "https://github.com/specs-feup/specs-c-libs");
-
+	
+	var declaredName = this._declareName($function, function(){return IdGenerator.next("clava_logger_");});
+	var loggerName = declaredName.name;
+	
+	if(declaredName.alreadyDeclared) {
+		return loggerName;
+	}
+	
+	
+/*	
     // Check if setup was already called for this function
     var declaration = $function.declaration(true);
     var loggerName = this.functionMap[declaration];
@@ -130,7 +131,7 @@ Logger.prototype._setup_cxx = function($file, $function) {
         loggerName = IdGenerator.next("clava_logger_");
         this.functionMap[declaration] = loggerName;
     }
-
+*/
     // Add include to Logger for Cpp only
     $file.addInclude("SpecsLogger.h", false);
 
@@ -150,6 +151,67 @@ Logger.prototype._setup_cxx = function($file, $function) {
     $function.body.insertBegin(loggerDecl);
 
     return loggerName;
+}
+
+Logger.prototype._log_cxx_stdcpp = function($file, $function) {
+
+
+	var streamName;
+	if(this.filename === undefined) {
+		streamName = this._setup_cxx_stdcpp_console($file, $function);
+	} else {
+		streamName = this._setup_cxx_stdcpp_file($file, $function);
+	}
+	
+	 // Create code from elements.
+    var code = streamName + " << " + this.currentElements.map(function(element) {
+		if(element.type === this.Type.NORMAL) {
+			return '"' + element.content + '"';
+		}
+        
+		return element.content;
+    }, this).join(" << ") + ";";
+
+    return code;
+	
+}
+
+
+Logger.prototype._setup_cxx_stdcpp_console = function($file, $function) {
+
+    var streamName = "std::cout";
+
+	// Add include
+    $file.addInclude("iostream", true);
+	
+	return streamName;
+}
+
+
+Logger.prototype._setup_cxx_stdcpp_file = function($file, $function) {
+
+	var declaredName = this._declareName($function, function(){return IdGenerator.next("log_file_");});
+	var streamName = declaredName.name;
+	
+	if(declaredName.alreadyDeclared) {
+		return streamName;
+	}
+	
+	
+	
+	// Add include
+    $file.addInclude("fstream", true);
+
+	// Declare file stream
+	var code = "std::ofstream " + streamName + ";\n";
+
+	// Open file
+	code = code + streamName + ".open(\"" + this.filename + "\", std::ios_base::app);";
+	
+    // Add code at beginning of the function
+    $function.body.insertBegin(code);
+
+    return streamName;
 }
 
 Logger.prototype._log_c = function($file, $function) {
