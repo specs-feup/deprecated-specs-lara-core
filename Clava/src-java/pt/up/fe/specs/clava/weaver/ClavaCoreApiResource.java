@@ -26,7 +26,7 @@ public enum ClavaCoreApiResource implements LaraResourceProvider {
     LOGGER("util/Logger.lara"),
 
     ENERGY("profiling/Energy.lara"),
-    TIMMIMG("profiling/Timming.lara");
+    TIMIMG("profiling/Timing.lara");
 
     private final String resource;
 

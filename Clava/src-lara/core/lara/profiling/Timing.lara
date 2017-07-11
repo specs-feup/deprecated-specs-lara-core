@@ -38,7 +38,7 @@ aspectdef MeasureTime
 	
 	// Check if C++
 	if(!$file.isCxx) {
-		println("Cannot measure timming on " + $file.name + ", not yet implemented for C files, only C++");
+		println("Cannot measure timing on " + $file.name + ", not yet implemented for C files, only C++");
 		return;
 	}
 	
@@ -47,25 +47,25 @@ aspectdef MeasureTime
 	
 	select $jp end
 	apply
-		var timmingId = _nextClavaTimmingId();
-		var startVar = "clava_timming_start_" + timmingId;
-		var endVar = "clava_timming_end_" + timmingId;
+		var timingId = _nextClavaTimingId();
+		var startVar = "clava_timing_start_" + timingId;
+		var endVar = "clava_timing_end_" + timingId;
 	
-		$jp.insert before "chrono::high_resolution_clock::time_point " + startVar +" = chrono::high_resolution_clock::now();";
+		$jp.insert before "std::chrono::high_resolution_clock::time_point " + startVar +" = std::chrono::high_resolution_clock::now();";
 		
-		var durantionVar = "clava_timming_durantion_" + timmingId;
-		var durationCalc = "chrono::duration_cast<chrono::" + unit +">( " + endVar + " - " + startVar + " ).count()";
-		$timmingResult = AstFactory.exprLiteral(durationCalc);
-		$timmingResultDecl = AstFactory.varDecl(durantionVar, $timmingResult);
+		var durantionVar = "clava_timing_durantion_" + timingId;
+		var durationCalc = "std::chrono::duration_cast<std::chrono::" + unit +">( " + endVar + " - " + startVar + " ).count()";
+		$timingResult = AstFactory.exprLiteral(durationCalc);
+		$timingResultDecl = AstFactory.varDecl(durantionVar, $timingResult);
 		
 		// Build message
-		logger.add(message).addDouble(durantionVar);
+		logger.append(message).appendDouble(durantionVar).ln();
 		
 		// 'after' must be inserted in reverse order		
-		$jp.exec insertAfter($timmingResultDecl);
-		$jp.insert after "chrono::high_resolution_clock::time_point " + endVar +" = chrono::high_resolution_clock::now();";
+		$jp.exec insertAfter($timingResultDecl);
+		$jp.insert after "std::chrono::high_resolution_clock::time_point " + endVar +" = std::chrono::high_resolution_clock::now();";
 
-		logger.log($timmingResultDecl);
+		logger.log($timingResultDecl);
 		
 	end
 	
@@ -73,10 +73,10 @@ end
 
 
 // Global id for timers
-var _clava_timming_id = 0;
+var _clava_timing_id = 0;
 
-function _nextClavaTimmingId() {
-	var id = _clava_timming_id;
-	_clava_timming_id++;
+function _nextClavaTimingId() {
+	var id = _clava_timing_id;
+	_clava_timing_id++;
 	return id;
 }
