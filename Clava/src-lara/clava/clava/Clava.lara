@@ -17,5 +17,5 @@ Clava.infoProjectDependency = function(projectName, repositoryUrl) {
 	call MessageToUser(message);
 };
 
-
+Clava.useSpecsLogger = true;
 
