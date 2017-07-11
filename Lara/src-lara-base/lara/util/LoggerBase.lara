@@ -158,3 +158,30 @@ Logger.prototype._printfFormat = function(printFunctionName) {
     code = code + ");";
     return code;
 }
+
+/**
+ *
+ * @param $function Functino where name will be declared
+ * @param nameGenerator function that receives no arguments and generates a new name
+ */
+Logger.prototype._declareName = function($function, nameGenerator) {
+    // Check if thislogger was already declared in the given function
+    var declaration = $function.declaration(true);
+    var name = this.functionMap[declaration];
+
+	
+    if (name !== undefined) {
+		alreadyDeclared = true;
+        //return name;
+    } else {
+        name = nameGenerator(); 
+        this.functionMap[declaration] = name;
+		alreadyDeclared = false;
+    }
+	
+	return {
+        name: name,
+        alreadyDeclared: alreadyDeclared
+    };
+}
+
