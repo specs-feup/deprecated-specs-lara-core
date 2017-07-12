@@ -290,8 +290,9 @@ Logger.prototype._log_c_file_setup = function($file, $function) {
 	
 	return streamName;
 }
-
+/*
 codedef(a) %{
 	hello;
 }%
 
+*/
