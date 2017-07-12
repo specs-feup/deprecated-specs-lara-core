@@ -265,34 +265,38 @@ Logger.prototype._log_c_console = function($file, $function) {
 Logger.prototype._log_c_file = function($file, $function) {
 	var fileVar = this._log_c_file_setup($file, $function);
 
-	return this._printfFormat("fprintf (" + fileVar + ", ");
+	return this._printfFormat("fprintf", "(" + fileVar + ", \"");
 }
 
 Logger.prototype._log_c_file_setup = function($file, $function) {
 	var declaredName = this._declareName($function, function(){return IdGenerator.next("log_file_");});
-	var streamName = declaredName.name;
+	var varname = declaredName.name;
 	
 	if(declaredName.alreadyDeclared) {
-		return streamName;
+		return varname;
 	}
 
     // Setup
 	$file.addInclude("stdio.h", true);
+	$file.addInclude("stdlib.h", true);
 
-	// Declare file stream
-	var code = "std::ofstream " + streamName + ";\n";
-
-	// Open file
-	code = code + streamName + ".open(\"" + this.filename + "\", std::ios_base::app);";
+	// Declare and open file
+	var code = _clava_logger_filename_declaration(varname, this.filename);
 	
     // Add code at beginning of the function
     $function.body.insertBegin(code);
-	
-	return streamName;
-}
-/*
-codedef(a) %{
-	hello;
-}%
 
-*/
+	// Close file at the end of the function
+	$function.body.insertEnd("fclose(" + varname + ");");
+	
+	return varname;
+}
+
+codedef _clava_logger_filename_declaration(varname, filename) %{
+FILE *[[varname]] = fopen("[[filename]]", "a+");
+if ([[varname]] == NULL)
+{
+    printf("Error opening file [[filename]]\n");
+    exit(1);
+} 
+}% end
