@@ -126,9 +126,13 @@ Logger.prototype._getPrintableContent = function(element) {
  * generates printf like code for c and java, 
  * @param printFunctionName the name of the function to use (printf for C, System.out.println for Java)
  */
-Logger.prototype._printfFormat = function(printFunctionName) {
+Logger.prototype._printfFormat = function(printFunctionName, prefix) {
+	if(prefix === undefined) {
+		prefix = "(\"";
+	}
+
     // Create code from elements
-    var code = printFunctionName + "(\"" +
+    var code = printFunctionName + prefix +
         this.currentElements.map(function(element) {
             var enumType = this.Type;
             if (element.type === enumType.NORMAL) {
