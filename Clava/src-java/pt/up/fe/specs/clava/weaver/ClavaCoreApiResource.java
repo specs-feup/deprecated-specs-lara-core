@@ -30,7 +30,7 @@ public enum ClavaCoreApiResource implements LaraResourceProvider {
 
     private final String resource;
 
-    private static final String WEAVER_PACKAGE = "core/";
+    private static final String WEAVER_PACKAGE = "clava/";
     private static final String BASE_PACKAGE = "lara/";
 
     /**

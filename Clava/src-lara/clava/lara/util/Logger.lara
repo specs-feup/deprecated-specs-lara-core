@@ -216,17 +216,31 @@ Logger.prototype._setup_cxx_stdcpp_file = function($file, $function) {
 
 Logger.prototype._log_c = function($file, $function) {
 
+	if (this.filename === undefined) {
+		return this._log_c_console($file, $function);
+	} else {
+		return this._log_c_file($file, $function);
+	}
+	/*
     if (!this._setup_c($file, $function)) {
         return;
     }
 
     return this._printfFormat("printf");
+	*/
 }
 
 /**
  * Sets up the code for the Logger in the file that is called
  */
+ /*
 Logger.prototype._setup_c = function($file, $function) {
+
+	if (this.filename === undefined) {
+		return _setup_c_console($file, $function);
+	} else {
+		return _setup_c_file($file, $function);
+	}
 
     // Add stdio.h if console, not implemented yet for file
     if (this.filename !== undefined) {
@@ -238,3 +252,46 @@ Logger.prototype._setup_c = function($file, $function) {
 
     return true;
 }
+*/
+
+Logger.prototype._log_c_console = function($file, $function) {
+    // Setup
+	$file.addInclude("stdio.h", true);
+	
+	return this._printfFormat("printf");
+//    return true;
+}
+
+Logger.prototype._log_c_file = function($file, $function) {
+	var fileVar = this._log_c_file_setup($file, $function);
+
+	return this._printfFormat("fprintf (" + fileVar + ", ");
+}
+
+Logger.prototype._log_c_file_setup = function($file, $function) {
+	var declaredName = this._declareName($function, function(){return IdGenerator.next("log_file_");});
+	var streamName = declaredName.name;
+	
+	if(declaredName.alreadyDeclared) {
+		return streamName;
+	}
+
+    // Setup
+	$file.addInclude("stdio.h", true);
+
+	// Declare file stream
+	var code = "std::ofstream " + streamName + ";\n";
+
+	// Open file
+	code = code + streamName + ".open(\"" + this.filename + "\", std::ios_base::app);";
+	
+    // Add code at beginning of the function
+    $function.body.insertBegin(code);
+	
+	return streamName;
+}
+
+codedef(a) %{
+	hello;
+}%
+
