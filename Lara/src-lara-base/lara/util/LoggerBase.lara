@@ -124,6 +124,10 @@ Logger.prototype._getPrintableContent = function(element) {
 	
 	// Test if it has a decimal point
 	if (element.type === enumType.DOUBLE) {
+		if((typeof content) !== "number") {
+			return content;
+		}
+		
 		var indexOfDecimal = String(content).indexOf(".");
 		if(indexOfDecimal === -1) {
 			content = content += ".0";
