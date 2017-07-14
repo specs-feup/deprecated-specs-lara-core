@@ -20,7 +20,8 @@ import org.lara.interpreter.weaver.utils.LaraResourceProvider;
  *
  */
 public enum ClavaApiResource implements LaraResourceProvider {
-    CLAVA("Clava.lara");
+    CLAVA("Clava.lara"),
+    CLAVA_ASPECTS("ClavaAspects.lara");
 
     private final String resource;
 

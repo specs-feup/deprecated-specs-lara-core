@@ -1,0 +1,14 @@
+/**
+ * ASPECTS 
+ */
+aspectdef Rebuild
+	select program end
+	apply
+		$program.exec rebuild();
+	end
+end
+
+
+
+
+
