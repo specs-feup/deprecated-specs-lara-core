@@ -19,19 +19,22 @@ import org.lara.interpreter.weaver.utils.LaraResourceProvider;
  * @author Joao Bispo
  *
  */
-public enum ClavaApiResource implements LaraResourceProvider {
-    CLAVA("Clava.lara"),
-    CLAVA_ASPECTS("ClavaAspects.lara");
+public enum LaraCoreApiResource implements LaraResourceProvider {
+
+    // Code
+    LOGGER("code/Logger.lara"),
+    ENERGY("code/Energy.lara"),
+    TIMIMG("code/Timing.lara");
 
     private final String resource;
 
     private static final String WEAVER_PACKAGE = "clava/";
-    private static final String BASE_PACKAGE = "clava/";
+    private static final String BASE_PACKAGE = "lara/";
 
     /**
      * @param resource
      */
-    private ClavaApiResource(String resource) {
+    private LaraCoreApiResource(String resource) {
         this.resource = WEAVER_PACKAGE + getSeparatorChar() + BASE_PACKAGE + resource;
     }
 
