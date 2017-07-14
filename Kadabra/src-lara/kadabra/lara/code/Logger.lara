@@ -1,4 +1,5 @@
 import lara.code.LoggerBase;
+import lara.util.PrintOnce;
 
 /**
  * Adds code that prints the message built up to that point with the append() functions.
@@ -57,10 +58,7 @@ Logger.prototype._log_code_console = function() {
 
 Logger.prototype._log_code_file = function() {
 
-	if(this.hasShownMessage === undefined) {
-		println("Weaved code has dependency to project SpecsUtils, which can be found at https://github.com/specs-feup/specs-java-libs");	
-		this.hasShownMessage = true;
-	}
+	PrintOnce.message("Weaved code has dependency to project SpecsUtils, which can be found at https://github.com/specs-feup/specs-java-libs");
 
 	var code = this._printfFormat("String.format", undefined, ")");
 	

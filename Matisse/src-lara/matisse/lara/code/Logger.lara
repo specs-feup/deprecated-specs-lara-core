@@ -1,4 +1,5 @@
 import lara.code.LoggerBase;
+import lara.util.PrintOnce;
 
 /**
  * Adds code that prints the message built up to that point with the append() functions.
@@ -7,5 +8,5 @@ import lara.code.LoggerBase;
  */
 Logger.prototype.log = function($jp, insertBefore) {
 
-	println("Logger.log: not yet implemented");
+	PrintOnce.message("Logger.log: not yet implemented");
 }

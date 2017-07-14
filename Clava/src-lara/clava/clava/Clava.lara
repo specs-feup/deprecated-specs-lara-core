@@ -2,7 +2,7 @@ import lara.Weaver;
 
 var Clava = {};
 
-
+/*
 Clava.infoProjectDependency = function(projectName, repositoryUrl) {
 	if(projectName === undefined) {
 		println("Clava.infoProjectDependency: projectName is undefined");
@@ -16,6 +16,7 @@ Clava.infoProjectDependency = function(projectName, repositoryUrl) {
 	
 	call MessageToUser(message);
 };
+*/
 
 Clava.useSpecsLogger = true;
 

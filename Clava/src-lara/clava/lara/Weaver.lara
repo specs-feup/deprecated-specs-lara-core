@@ -9,6 +9,7 @@ aspectdef Rebuild
 	end
 end
 
+/*
 aspectdef MessageToUser
 	input message end
 	
@@ -17,7 +18,7 @@ aspectdef MessageToUser
 		$program.exec messageToUser(message);
 	end
 end
-
+*/
 
 
 

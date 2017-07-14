@@ -25,7 +25,7 @@ public enum LaraApiResource implements LaraResourceProvider {
 
     // Util
     STRING_SET("util/StringSet.lara"),
-    UniqueMessages("util/UniqueMessages.lara");
+    UniqueMessages("util/PrintOnce.lara");
 
     private final String resource;
 

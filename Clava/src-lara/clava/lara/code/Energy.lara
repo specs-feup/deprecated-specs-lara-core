@@ -1,5 +1,5 @@
 import lara.code.Logger;
-
+import lara.util.PrintOnce;
 
 /**
  * Adds calls to RAPL between a section of code, measure is in Joules
@@ -8,7 +8,8 @@ aspectdef MeasureEnergy
 	input $jp, message, filename end
 
 	// Message about dependency
-	Clava.infoProjectDependency("SpecsRapl", "https://github.com/specs-feup/specs-c-libs");
+	PrintOnce.message("Weaved code has dependency to project SpecsRapl, which can be found at https://github.com/specs-feup/specs-c-libs");
+	//Clava.infoProjectDependency("SpecsRapl", "https://github.com/specs-feup/specs-c-libs");
 
 	var logger = new Logger(false, filename);
 
