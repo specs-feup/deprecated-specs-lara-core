@@ -1,0 +1,82 @@
+import lara.code.Logger;
+
+/**
+ * Adds calls to a timer between a section of code. By default, measure is in milliseconds.
+ */
+aspectdef MeasureTime
+	input $jp, message, filename, unit end
+
+	// TODO: normalize and check unit with an enum (e.g., TimeUnit - day, second, etc)
+	
+	if(unit === undefined) {
+		unit = "milliseconds";
+	} else {
+		unit = unit.toLowerCase();
+	}
+	
+	var logger = new Logger(false, filename);
+	
+	// Build message
+	if(message === undefined) {
+		// Try to get a name
+		var name = $jp.name;
+		if(name === undefined) {
+			message = "time (us): ";
+		} else {
+			message = $jp.joinpointType + " \"" + name + "\" time (us): ";
+		}
+		
+	}
+
+
+	$file = $jp.ancestor("file");
+		
+	if($file === undefined) {
+		println("Could not find the corresponding file of the given joinpoint: " + $jp);
+		return;
+	}
+	
+	// Check if C++
+	if(!$file.isCxx) {
+		println("Cannot measure timing on " + $file.name + ", not yet implemented for C files, only C++");
+		return;
+	}
+	
+	// Add include
+	$file.addInclude("chrono", true);
+	
+	select $jp end
+	apply
+		var timingId = _nextClavaTimingId();
+		var startVar = "clava_timing_start_" + timingId;
+		var endVar = "clava_timing_end_" + timingId;
+	
+		$jp.insert before "std::chrono::high_resolution_clock::time_point " + startVar +" = std::chrono::high_resolution_clock::now();";
+		
+		var durantionVar = "clava_timing_durantion_" + timingId;
+		var durationCalc = "std::chrono::duration_cast<std::chrono::" + unit +">( " + endVar + " - " + startVar + " ).count()";
+		$timingResult = AstFactory.exprLiteral(durationCalc);
+		$timingResultDecl = AstFactory.varDecl(durantionVar, $timingResult);
+		
+		// Build message
+		logger.append(message).appendDouble(durantionVar).ln();
+		
+		// 'after' must be inserted in reverse order		
+		$jp.exec insertAfter($timingResultDecl);
+		$jp.insert after "std::chrono::high_resolution_clock::time_point " + endVar +" = std::chrono::high_resolution_clock::now();";
+
+		logger.log($timingResultDecl);
+		
+	end
+	
+end
+
+
+// Global id for timers
+var _clava_timing_id = 0;
+
+function _nextClavaTimingId() {
+	var id = _clava_timing_id;
+	_clava_timing_id++;
+	return id;
+}
