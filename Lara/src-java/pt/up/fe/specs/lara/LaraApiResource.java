@@ -24,8 +24,9 @@ public enum LaraApiResource implements LaraResourceProvider {
     LOGGER_BASE("code/LoggerBase.lara"),
 
     // Util
-    STRING_SET("util/StringSet.lara"),
-    UniqueMessages("util/PrintOnce.lara");
+    ID_GENERATOR("util/IdGenerator.lara"),
+    PRINT_ONCE("util/PrintOnce.lara"),
+    STRING_SET("util/StringSet.lara");
 
     private final String resource;
 
