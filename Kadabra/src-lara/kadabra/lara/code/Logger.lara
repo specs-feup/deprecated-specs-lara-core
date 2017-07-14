@@ -19,6 +19,8 @@ Logger.prototype.log = function($jp, insertBefore) {
         return;
     }
 
+	this._insert($jp, insertBefore, code);
+	/*
     //call LoggerInsert($jp, code, insertBefore);
     var insertBeforeString = insertBefore ? "before" : "after";
 	
@@ -26,7 +28,7 @@ Logger.prototype.log = function($jp, insertBefore) {
 
     // Clear internal state
     this._clear();
-	
+	*/
     return this;
 }
 

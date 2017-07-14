@@ -70,6 +70,16 @@ Logger.prototype._validateJp = function($jp, functionJpName) {
 	return true;
 }
 
+Logger.prototype._insert = function($jp, insertBefore, code) {
+
+    var insertBeforeString = insertBefore ? "before" : "after";
+	
+    $jp.insert(insertBeforeString, code);
+
+    // Clear internal state
+    this._clear();
+}
+
 Logger.prototype.append = function(expr) {
     return this._append_private(expr, this.Type.NORMAL);
 }
@@ -165,9 +175,13 @@ Logger.prototype._getPrintableContent = function(element) {
  * generates printf like code for c and java, 
  * @param printFunctionName the name of the function to use (printf for C, System.out.println for Java)
  */
-Logger.prototype._printfFormat = function(printFunctionName, prefix, suffix) {
+Logger.prototype._printfFormat = function(printFunctionName, prefix, suffix, delimiter) {
+	if(delimiter === undefined) {
+		delimiter = "\"";
+	}
+	
 	if(prefix === undefined) {
-		prefix = "(\"";
+		prefix = "(" + delimiter;
 	}
 	
 	if(suffix === undefined) {
@@ -183,7 +197,7 @@ Logger.prototype._printfFormat = function(printFunctionName, prefix, suffix) {
             }
             //return enumType.printfFormat[element.type];
             return this.printfFormat[element.type];
-        }, this).join("") + "\"";
+        }, this).join("") + delimiter;
 
 
     var valuesCode = this.currentElements
@@ -208,13 +222,15 @@ Logger.prototype._printfFormat = function(printFunctionName, prefix, suffix) {
 
 /**
  *
- * @param $function Functino where name will be declared
+ *
+ * @param $function Function where name will be declared
  * @param nameGenerator function that receives no arguments and generates a new name
  */
-Logger.prototype._declareName = function($function, nameGenerator) {
+//Logger.prototype._declareName = function($function, nameGenerator) {
+Logger.prototype._declareName = function(functionId, nameGenerator) {
     // Check if thislogger was already declared in the given function
-    var declaration = $function.declaration(true);
-    var name = this.functionMap[declaration];
+    //var declaration = $function.declaration(true);
+    var name = this.functionMap[functionId];
 
 	
     if (name !== undefined) {
@@ -222,7 +238,7 @@ Logger.prototype._declareName = function($function, nameGenerator) {
         //return name;
     } else {
         name = nameGenerator(); 
-        this.functionMap[declaration] = name;
+        this.functionMap[functionId] = name;
 		alreadyDeclared = false;
     }
 	

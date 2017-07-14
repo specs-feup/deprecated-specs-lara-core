@@ -41,6 +41,8 @@ Logger.prototype.log = function($jp, insertBefore) {
         return;
     }
 
+	this._insert($jp, insertBefore, code);
+/*
     //call LoggerInsert($jp, code, insertBefore);
     if (this.insertBefore) {
         $jp.insertBefore(code);
@@ -50,6 +52,7 @@ Logger.prototype.log = function($jp, insertBefore) {
 
     // Clear internal state
     this.currentElements = [];
+	*/
     return this;
 }
 
@@ -74,7 +77,8 @@ Logger.prototype._logSetup = function($jp, insertBefore) {
     }
 
     this.insertBefore = (insertBefore === undefined) ? false : insertBefore;
-    return $function;
+	// return $function
+    return $jp.ancestor("function");
 }
 
 Logger.prototype._log_cxx = function($file, $function) {
@@ -113,7 +117,7 @@ Logger.prototype._setup_cxx_specslogger = function($file, $function) {
 	//Clava.infoProjectDependency("SpecsLogger", "https://github.com/specs-feup/specs-c-libs");
 	PrintOnce.message("Weaved code has dependency to project SpecsLogger, which can be found at https://github.com/specs-feup/specs-c-libs");
 	
-	var declaredName = this._declareName($function, function(){return IdGenerator.next("clava_logger_");});
+	var declaredName = this._declareName($function.declaration(true), function(){return IdGenerator.next("clava_logger_");});
 	var loggerName = declaredName.name;
 	
 	if(declaredName.alreadyDeclared) {
@@ -191,7 +195,7 @@ Logger.prototype._setup_cxx_stdcpp_console = function($file, $function) {
 
 Logger.prototype._setup_cxx_stdcpp_file = function($file, $function) {
 
-	var declaredName = this._declareName($function, function(){return IdGenerator.next("log_file_");});
+	var declaredName = this._declareName($function.declaration(true), function(){return IdGenerator.next("log_file_");});
 	var streamName = declaredName.name;
 	
 	if(declaredName.alreadyDeclared) {
@@ -270,7 +274,7 @@ Logger.prototype._log_c_file = function($file, $function) {
 }
 
 Logger.prototype._log_c_file_setup = function($file, $function) {
-	var declaredName = this._declareName($function, function(){return IdGenerator.next("log_file_");});
+	var declaredName = this._declareName($function.declaration(true), function(){return IdGenerator.next("log_file_");});
 	var varname = declaredName.name;
 	
 	if(declaredName.alreadyDeclared) {
