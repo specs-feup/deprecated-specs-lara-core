@@ -63,13 +63,10 @@ Logger.prototype.log = function($jp, insertBefore) {
  * @return undefined on failure and a $function instance if successful
  */
 Logger.prototype._logSetup = function($jp, insertBefore) {
-    // Verify that $jp is inside a function
-    $function = $jp.ancestor("function");
-
-    if ($function === undefined) {
-        _warn("Given joinpoint (" + $jp + ") is not inside a function, returning");
-        return undefined;
-    }
+    // Validate join point
+	if(!this._validateJp($jp, "function")) {
+		return undefined;
+	}
 
     if (this.currentElements.length === 0) {
         _info("Nothing to log, call append() first");

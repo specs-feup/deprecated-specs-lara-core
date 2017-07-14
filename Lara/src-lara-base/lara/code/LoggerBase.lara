@@ -46,7 +46,29 @@ Logger.prototype.isGlobalFn = function() {
     println("Is Global Fn:" + this.isGlobal);
 }
 
+Logger.prototype._clear = function() {
+    this.currentElements = [];
+}
 
+/**
+ * Verifies that the given $jp is inside a function.
+ *
+ * Requires global attribute 'ancestor'. 
+ *
+ * @return true if $jp is inside a function, false otherwise
+ */
+Logger.prototype._validateJp = function($jp, functionJpName) {
+	var $function = $jp.ancestor(functionJpName);
+	
+   
+    if ($function === undefined) {
+        println("Logger: tried to insert log around joinpoit " + $jp + ", but is not inside a function");
+		this._clear();
+		return false;
+    }
+	
+	return true;
+}
 
 Logger.prototype.append = function(expr) {
     return this._append_private(expr, this.Type.NORMAL);

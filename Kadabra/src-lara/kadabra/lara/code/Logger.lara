@@ -9,19 +9,9 @@ import lara.util.PrintOnce;
 Logger.prototype.log = function($jp, insertBefore) {
     
 	// .ancestor does not support (yet?) aliased names, so it cannot retrive 'function', even if it exists in the joinpoint model
-	var $function = $jp.ancestor('method');
-	
-   
-    if ($function === undefined) {
-        println("Logger: tried to insert log around joinpoit " + $jp + ", but is not inside a method");
-		this._clear();
+	if(!this._validateJp($jp, "method")) {
 		return;
-    }
-
-	/*
-    var code = this._printfFormat("System.out.printf");
-    
-	*/
+	}
 
 	
 	var code = this._log_code();
@@ -38,10 +28,6 @@ Logger.prototype.log = function($jp, insertBefore) {
     this._clear();
 	
     return this;
-}
-
-Logger.prototype._clear = function() {
-    this.currentElements = [];
 }
 
 Logger.prototype._log_code = function() {
