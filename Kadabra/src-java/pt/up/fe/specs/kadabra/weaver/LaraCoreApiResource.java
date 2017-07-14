@@ -11,7 +11,7 @@
  * specific language governing permissions and limitations under the License. under the License.
  */
 
-package pt.up.fe.specs.matisse.weaver;
+package pt.up.fe.specs.kadabra.weaver;
 
 import org.lara.interpreter.weaver.utils.LaraResourceProvider;
 
@@ -19,18 +19,18 @@ import org.lara.interpreter.weaver.utils.LaraResourceProvider;
  * @author Joao Bispo
  *
  */
-public enum MatisseLaraApiResource implements LaraResourceProvider {
+public enum LaraCoreApiResource implements LaraResourceProvider {
     LOGGER("code/Logger.lara");
 
     private final String resource;
 
-    private static final String WEAVER_PACKAGE = "matisse/";
+    private static final String WEAVER_PACKAGE = "kadabra/";
     private static final String BASE_PACKAGE = "lara/";
 
     /**
      * @param resource
      */
-    private MatisseLaraApiResource(String resource) {
+    private LaraCoreApiResource(String resource) {
         this.resource = WEAVER_PACKAGE + getSeparatorChar() + BASE_PACKAGE + resource;
     }
 
