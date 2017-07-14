@@ -23,10 +23,10 @@ public enum ClavaCoreApiResource implements LaraResourceProvider {
 
     WEAVER("Weaver.lara"),
 
-    LOGGER("util/Logger.lara"),
-
-    ENERGY("profiling/Energy.lara"),
-    TIMIMG("profiling/Timing.lara");
+    // Code
+    LOGGER("code/Logger.lara"),
+    ENERGY("code/Energy.lara"),
+    TIMIMG("code/Timing.lara");
 
     private final String resource;
 

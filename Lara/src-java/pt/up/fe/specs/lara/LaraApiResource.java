@@ -20,8 +20,12 @@ import org.lara.interpreter.weaver.utils.LaraResourceProvider;
  *
  */
 public enum LaraApiResource implements LaraResourceProvider {
+    // Code
+    LOGGER_BASE("code/LoggerBase.lara"),
 
-    LOGGER_BASE("util/LoggerBase.lara");
+    // Util
+    STRING_SET("util/StringSet.lara"),
+    UniqueMessages("util/UniqueMessages.lara");
 
     private final String resource;
 

@@ -20,7 +20,7 @@ import org.lara.interpreter.weaver.utils.LaraResourceProvider;
  *
  */
 public enum KadabraLaraApiResource implements LaraResourceProvider {
-    LOGGER("util/Logger.lara");
+    LOGGER("code/Logger.lara");
 
     private final String resource;
 
