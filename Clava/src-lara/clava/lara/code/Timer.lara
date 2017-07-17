@@ -74,7 +74,7 @@ Timer.prototype._time_cpp = function($start, prefix, $end) {
     $timingResult = AstFactory.exprLiteral(_timer_cpp_calc_interval(startVar, endVar, cppUnit));
 
     // Declare variable for time interval, which uses calculation as initialization
-    var timeIntervalVar = IdGenerator.next("clava_timing_durantion_");
+    var timeIntervalVar = IdGenerator.next("clava_timing_duration_");
     $timingResultDecl = AstFactory.varDecl(timeIntervalVar, $timingResult);
 
     // Build message
@@ -163,24 +163,24 @@ Timer.prototype._time_c = function($start, prefix, $end) {
 //C codedefs 
 // Windows
 codedef _timer_c_windows_declare_vars_now(timeStartVar, timeEndVar, timeFrequencyVar)%{
-	LARGE_INTEGER [[timeStartVar]], [[timeEndVar]], [[timeFrequencyVar]];
-	double tempDeltaTime; 
-    QueryPerformanceFrequency(&[[timeFrequencyVar]]);
-    QueryPerformanceCounter(&[[timeStartVar]]);
+LARGE_INTEGER [[timeStartVar]], [[timeEndVar]], [[timeFrequencyVar]];
+double tempDeltaTime; 
+QueryPerformanceFrequency(&[[timeFrequencyVar]]);
+QueryPerformanceCounter(&[[timeStartVar]]);
 }%end
 codedef _timer_c_windows_get_final_time(timeEndVar)%{
-    QueryPerformanceCounter(&[[timeEndVar]]);
+QueryPerformanceCounter(&[[timeEndVar]]);
 }%end
 codedef _timer_c_windows_calc_interval(timeStartVar, timeEndVar, timeFrequencyVar)%{
-    ([[timeEndVar]].QuadPart-[[timeStartVar]].QuadPart) / (double)[[timeFrequencyVar]].QuadPart;
+([[timeEndVar]].QuadPart-[[timeStartVar]].QuadPart) / (double)[[timeFrequencyVar]].QuadPart;
 }%end
 
 
 //Cpp codedefs
 codedef _timer_cpp_now(timeVar)%{
-    std::chrono::high_resolution_clock::time_point[[timeVar]] = std::chrono::high_resolution_clock::now();
+std::chrono::high_resolution_clock::time_point[[timeVar]] = std::chrono::high_resolution_clock::now();
 }%end
 
 codedef _timer_cpp_calc_interval(startVar, endVar, unit)%{
-    std::chrono::duration_cast < std::chrono::[[unit]] > ([[endVar]] - [[startVar]]).count()
+std::chrono::duration_cast < std::chrono::[[unit]] > ([[endVar]] - [[startVar]]).count()
 }%end
