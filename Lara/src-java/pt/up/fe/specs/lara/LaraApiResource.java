@@ -22,6 +22,7 @@ import org.lara.interpreter.weaver.utils.LaraResourceProvider;
 public enum LaraApiResource implements LaraResourceProvider {
     // Code
     LOGGER_BASE("code/LoggerBase.lara"),
+    TIMER_BASE("code/TimerBase.lara"),
 
     // Util
     ID_GENERATOR("util/IdGenerator.lara"),

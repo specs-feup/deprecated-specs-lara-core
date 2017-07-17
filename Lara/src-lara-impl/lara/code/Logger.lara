@@ -1,4 +1,4 @@
-import lara.util.LoggerBase;
+import lara.code.LoggerBase;
 
 /**
  * Adds code that prints the message built up to that point with the append() functions.

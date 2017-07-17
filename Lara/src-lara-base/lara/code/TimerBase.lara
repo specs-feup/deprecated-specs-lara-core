@@ -1,0 +1,88 @@
+import lara.code.Logger;
+
+/**
+ * Timer object, for timing sections of code.
+ */
+var Timer = function(unit, filename) {
+	if(unit === undefined) {
+		unit = this.TimeUnit.MILLISECONDS;
+	}
+	
+	this.unit = unit;    
+	this.filename = filename;
+	this.printUnit = true;
+};
+
+/**
+ * @param printUnit boolean
+ */
+Timer.prototype.setPrintUnit = function(printUnit) {
+	this.printUnit = printUnit;
+}
+
+/**
+ * Enum representing available time units
+ */
+Timer.prototype.TimeUnit = {
+    NANOSECONDS: 1,
+    MICROSECONDS: 2,
+    MILLISECONDS: 3,
+    SECONDS: 4,
+    MINUTES: 5,
+    HOURS: 6,
+    DAYS: 7,
+}
+
+/**
+ * C++ std::chrono macros
+ */
+Timer.prototype._units_string = {
+    1: "ns",
+    2: "us",
+    3: "ms",
+    4: "s",
+    5: "minutes",
+    6: "hours",
+    7: "days",
+}
+
+Timer.prototype.getUnitsString = function() {
+	return this._units_string[this.unit];
+}
+
+
+/**
+ * Verifies that join point start is not undefined, that it is inside a function.
+ * Additionally, if $end is not undefined, checks if it is inside the same function as $start.
+ *
+ * [Requires] global attribute 'ancestor'. 
+ *
+ * @return true if $start is a valid join point for the 'time' function
+ */
+Timer.prototype._timeValidate = function($start, $end, functionJpName) {
+	if($start === undefined) {
+		_warn("Timer: $start join point is undefined");
+		return false;
+	}
+
+	var $function = $start.ancestor(functionJpName);
+	   
+    if ($function === undefined) {
+        println("Timer: tried to measure time at joinpoit " + $start + ", but it is not inside a function");
+		return false;
+    }
+
+	if($end !== undefined) {
+		var $endFunction = $end.ancestor(functionJpName);
+		
+		if ($endFunction === undefined) {
+			println("Timer: tried to end measuring time at joinpoit " + $end + ", but it is not inside a function");
+			return false;
+		}
+		
+		// TODO: Checking if it is the same function not implemented yet, requires attribute '$function.id'
+	}
+	
+	return true;
+}
+
