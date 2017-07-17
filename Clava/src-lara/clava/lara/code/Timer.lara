@@ -111,7 +111,6 @@ Timer.prototype._time_c = function($start, prefix, $end) {
 
     $file = $start.ancestor("file");
 
-    return;
     
     var codeBefore, codeAfter, timeIntervalVar;
 
@@ -128,7 +127,7 @@ Timer.prototype._time_c = function($start, prefix, $end) {
         var endVar = IdGenerator.next("clava_timing_end_");
         var frequencyVar = IdGenerator.next("clava_timing_frequency_");
 
-        codeBefore = _timer_c_windows_declare_vars(startVar, endVar, frequencyVar);
+        codeBefore = _timer_c_windows_declare_vars_now(startVar, endVar, frequencyVar);
         codeAfter = _timer_c_windows_get_final_time(endVar);
 
         // Create literal node with calculation of time interval
@@ -150,11 +149,11 @@ Timer.prototype._time_c = function($start, prefix, $end) {
     logger.ln();
 
     // Insert code
-    $start.insertBefore(codeTic);
+    $start.insertBefore(codeBefore);
 
     // 'after' insertions must be done in reverse order		
     $end.insertAfter($timingResultDecl);
-    $end.insertAfter(codeToc);
+    $end.insertAfter(codeAfter);
 
 
     // Log time information
