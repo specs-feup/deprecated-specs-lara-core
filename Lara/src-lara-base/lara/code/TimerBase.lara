@@ -4,20 +4,20 @@ import lara.code.Logger;
  * Timer object, for timing sections of code.
  */
 var Timer = function(unit, filename) {
-	if(unit === undefined) {
-		unit = this.TimeUnit.MILLISECONDS;
-	}
-	
-	this.unit = unit;    
-	this.filename = filename;
-	this.printUnit = true;
+    if (unit === undefined) {
+        unit = this.TimeUnit.MILLISECONDS;
+    }
+
+    this.unit = unit;
+    this.filename = filename;
+    this.printUnit = true;
 };
 
 /**
  * @param printUnit boolean
  */
 Timer.prototype.setPrintUnit = function(printUnit) {
-	this.printUnit = printUnit;
+    this.printUnit = printUnit;
 }
 
 /**
@@ -47,7 +47,7 @@ Timer.prototype._units_string = {
 }
 
 Timer.prototype.getUnitsString = function() {
-	return this._units_string[this.unit];
+    return this._units_string[this.unit];
 }
 
 
@@ -60,29 +60,28 @@ Timer.prototype.getUnitsString = function() {
  * @return true if $start is a valid join point for the 'time' function
  */
 Timer.prototype._timeValidate = function($start, $end, functionJpName) {
-	if($start === undefined) {
-		_warn("Timer: $start join point is undefined");
-		return false;
-	}
-
-	var $function = $start.ancestor(functionJpName);
-	   
-    if ($function === undefined) {
-        println("Timer: tried to measure time at joinpoit " + $start + ", but it is not inside a function");
-		return false;
+    if ($start === undefined) {
+        _warn("Timer: $start join point is undefined");
+        return false;
     }
 
-	if($end !== undefined) {
-		var $endFunction = $end.ancestor(functionJpName);
-		
-		if ($endFunction === undefined) {
-			println("Timer: tried to end measuring time at joinpoit " + $end + ", but it is not inside a function");
-			return false;
-		}
-		
-		// TODO: Checking if it is the same function not implemented yet, requires attribute '$function.id'
-	}
-	
-	return true;
-}
+    var $function = $start.ancestor(functionJpName);
 
+    if ($function === undefined) {
+        println("Timer: tried to measure time at joinpoit " + $start + ", but it is not inside a function");
+        return false;
+    }
+
+    if ($end !== undefined) {
+        var $endFunction = $end.ancestor(functionJpName);
+
+        if ($endFunction === undefined) {
+            println("Timer: tried to end measuring time at joinpoit " + $end + ", but it is not inside a function");
+            return false;
+        }
+
+        // TODO: Checking if it is the same function not implemented yet, requires attribute '$function.id'
+    }
+
+    return true;
+}
