@@ -132,10 +132,13 @@ Timer.prototype._time_c = function($start, prefix, $end) {
         codeAfter = _timer_c_windows_get_final_time(endVar);
 
         // Create literal node with calculation of time interval
-        $timingResult = ClavaJoinPoints.exprLiteral(_timer_c_windows_calc_interval(startVar, endVar, frequencyVar), ClavaJoinPoints.builtinType("double"));
+        $timingResult = ClavaJoinPoints.exprLiteral(_timer_c_windows_calc_interval(startVar, endVar, frequencyVar, this._magnitudeFactor[this.unit]), ClavaJoinPoints.builtinType("double"));
         $timingResultDecl = ClavaJoinPoints.varDecl(timeIntervalVar, $timingResult);
-    } else if (Platforms.isLinux() || Platforms.isUnix()) {
-
+    } else if (Platforms.isLinux()) {
+        
+    }else{
+        //not supported
+        throw "Timer Exception: Platform not supported (Windows and Linux only)";
     }
 
 
@@ -171,8 +174,8 @@ QueryPerformanceCounter(&[[timeStartVar]]);
 codedef _timer_c_windows_get_final_time(timeEndVar)%{
 QueryPerformanceCounter(&[[timeEndVar]]);
 }%end
-codedef _timer_c_windows_calc_interval(timeStartVar, timeEndVar, timeFrequencyVar)%{
-([[timeEndVar]].QuadPart-[[timeStartVar]].QuadPart) / (double)[[timeFrequencyVar]].QuadPart;
+codedef _timer_c_windows_calc_interval(timeStartVar, timeEndVar, timeFrequencyVar, factorConversion)%{
+([[timeEndVar]].QuadPart-[[timeStartVar]].QuadPart) / (double)[[timeFrequencyVar]].QuadPart * ([[factorConversion]])
 }%end
 
 
