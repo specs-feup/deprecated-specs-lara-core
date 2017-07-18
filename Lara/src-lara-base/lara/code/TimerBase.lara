@@ -36,7 +36,7 @@ Timer.prototype.TimeUnit = {
 /**
  * C++ std::chrono macros
  */
-Timer.prototype._units_string = {
+Timer.prototype._unitsString = {
     1: "ns",
     2: "us",
     3: "ms",
@@ -45,9 +45,21 @@ Timer.prototype._units_string = {
     6: "hours",
     7: "days",
 }
+/**
+ * C conversion from seconds to other units through multiplication
+ */
+Timer.prototype._magnitudeFactor = {
+    1: 1000000000,
+    2: 1000000,
+    3: 1000,
+    4: 1,
+    5: (1/60),
+    6: (1/3600),
+    7: (1/86400),
+}
 
 Timer.prototype.getUnitsString = function() {
-    return this._units_string[this.unit];
+    return this._unitsString[this.unit];
 }
 
 
