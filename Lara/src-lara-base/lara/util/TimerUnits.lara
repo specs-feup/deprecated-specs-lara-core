@@ -1,0 +1,58 @@
+var TimerUnits = function(unit) {
+    // Enum representing available time units
+    this._timerUnit ={
+        NANOSECONDS: 1,
+        MICROSECONDS: 2,
+        MILLISECONDS: 3,
+        SECONDS: 4,
+        MINUTES: 5,
+        HOURS: 6,
+        DAYS: 7,
+    };
+    
+    // C++ std::chrono macros
+    this._cppTimeUnit = {
+        1: "nanoseconds",
+        2: "microseconds",
+        3: "milliseconds",
+        4: "seconds",
+        5: "minutes",
+        6: "hours",
+        7: undefined,
+    };
+    
+    // units string value for output
+    this._unitsString = {
+        1: "ns",
+        2: "us",
+        3: "ms",
+        4: "s",
+        5: "minutes",
+        6: "hours",
+        7: "days",
+    };
+
+    // C conversion from seconds to other units through multiplication
+    this._magnitudeFactor = {
+        1: 1000000000,
+        2: 1000000,
+        3: 1000,
+        4: 1,
+        5: (1/60),
+        6: (1/3600),
+        7: (1/86400),
+    };
+    
+    // Read the unit or ude the default
+    this.unit = unit === undefined?this._timerUnit.MILLISECONDS : unit;
+};
+
+TimerUnits.prototype.getUnitsString = function() {
+    return this._unitsString[this.unit];
+}
+TimerUnits.prototype.getCppTimeUnit = function() {
+    return this._cppTimeUnit[this.unit];
+}
+TimerUnits.prototype.getMagnitudeFactor = function() {
+    return this._magnitudeFactor[this.unit];
+}
