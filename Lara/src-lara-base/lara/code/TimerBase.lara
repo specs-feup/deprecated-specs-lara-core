@@ -1,10 +1,11 @@
 import lara.code.Logger;
+import lara.util.TimeUnits;
 
 /**
  * Timer object, for timing sections of code.
  */
 var Timer = function(unit, filename) {
-    this.timerUnits = new TimerUnits(unit);
+    this.timeUnits = new TimeUnits(unit);
     this.filename = filename;
     this.printUnit = true;
 };
