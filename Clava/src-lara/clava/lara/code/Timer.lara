@@ -127,7 +127,7 @@ Timer.prototype._time_c = function($start, prefix, $end) {
         codeAfter = _timer_c_windows_get_final_time(endVar);
 
         // Create literal node with calculation of time interval
-        $timingResult = ClavaJoinPoints.exprLiteral(_timer_c_windows_calc_interval(startVar, endVar, frequencyVar, this.timeUnits.getMagnitudeFactor()), ClavaJoinPoints.builtinType("double"));
+        $timingResult = ClavaJoinPoints.exprLiteral(_timer_c_windows_calc_interval(startVar, endVar, frequencyVar, this.timeUnits.getMagnitudeFactorFromSeconds()), ClavaJoinPoints.builtinType("double"));
 
         $timingResultDecl = ClavaJoinPoints.varDecl(timeIntervalVar, $timingResult);
 
@@ -143,7 +143,7 @@ Timer.prototype._time_c = function($start, prefix, $end) {
         codeAfter = _timer_c_linux_get_final_time(endVar);
 
         // Create literal node with calculation of time interval
-        $timingResult = ClavaJoinPoints.exprLiteral(_timer_c_linux_calc_interval(startVar, endVar, this.timeUnits.getMagnitudeFactor()), ClavaJoinPoints.builtinType("double"));
+        $timingResult = ClavaJoinPoints.exprLiteral(_timer_c_linux_calc_interval(startVar, endVar, this.timeUnits.getMagnitudeFactorFromSeconds()), ClavaJoinPoints.builtinType("double"));
 
         $timingResultDecl = ClavaJoinPoints.varDecl(timeIntervalVar, $timingResult);
     }else{
