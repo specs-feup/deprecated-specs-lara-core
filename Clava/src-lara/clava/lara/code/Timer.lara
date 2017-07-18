@@ -1,21 +1,13 @@
 import lara.code.TimerBase;
 import lara.code.Logger;
+
 import lara.util.IdGenerator;
 import lara.util.Platforms;
+import lara.util.TimerUnits;
+
 import clava.ClavaJoinPoints;
 
-/**
- * C++ std::chrono macros
- */
-Timer.prototype._cpp_TimeUnit = {
-    1: "nanoseconds",
-    2: "microseconds",
-    3: "milliseconds",
-    4: "seconds",
-    5: "minutes",
-    6: "hours",
-    7: undefined,
-}
+
 
 /**
  * Times the code of a given section.
@@ -69,7 +61,7 @@ Timer.prototype._time_cpp = function($start, prefix, $end) {
     var codeTic = _timer_cpp_now(startVar);
     var codeToc = _timer_cpp_now(endVar);
 
-    var cppUnit = this._cpp_TimeUnit[this.unit];
+    var cppUnit = this.timerUnits.getCppTimeUnit();
 
     // Create literal node with calculation of time interval
     $timingResult = ClavaJoinPoints.exprLiteral(_timer_cpp_calc_interval(startVar, endVar, cppUnit));
@@ -81,7 +73,7 @@ Timer.prototype._time_cpp = function($start, prefix, $end) {
     // Build message
     logger.append(prefix).appendDouble(timeIntervalVar);
     if (this.printUnit) {
-        logger.append(this.getUnitsString());
+        logger.append(this.timerUnits.getUnitsString());
     }
     logger.ln();
 
@@ -132,7 +124,7 @@ Timer.prototype._time_c = function($start, prefix, $end) {
         codeAfter = _timer_c_windows_get_final_time(endVar);
 
         // Create literal node with calculation of time interval
-        $timingResult = ClavaJoinPoints.exprLiteral(_timer_c_windows_calc_interval(startVar, endVar, frequencyVar, this._magnitudeFactor[this.unit]), ClavaJoinPoints.builtinType("double"));
+        $timingResult = ClavaJoinPoints.exprLiteral(_timer_c_windows_calc_interval(startVar, endVar, frequencyVar, this.timerUnits.getMagnitudeFactor()), ClavaJoinPoints.builtinType("double"));
         $timingResultDecl = ClavaJoinPoints.varDecl(timeIntervalVar, $timingResult);
     } else if (Platforms.isLinux()) {
         
@@ -148,7 +140,7 @@ Timer.prototype._time_c = function($start, prefix, $end) {
     // Build message
     logger.append(prefix).appendDouble(timeIntervalVar);
     if (this.printUnit) {
-        logger.append(this.getUnitsString());
+        logger.append(this.timerUnits.getUnitsString());
     }
     logger.ln();
 
