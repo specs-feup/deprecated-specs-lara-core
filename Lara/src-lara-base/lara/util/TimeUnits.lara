@@ -1,4 +1,4 @@
-var TimerUnits = function(unit) {
+var TimeUnits = function(unit) {
     // Enum representing available time units
     this._timerUnit ={
         NANOSECONDS: 1,
@@ -38,21 +38,21 @@ var TimerUnits = function(unit) {
         2: 1000000,
         3: 1000,
         4: 1,
-        5: (1/60),
-        6: (1/3600),
-        7: (1/86400),
+        5: "1/60",
+        6: "1/3600",
+        7: "1/86400",
     };
     
     // Read the unit or ude the default
     this.unit = unit === undefined?this._timerUnit.MILLISECONDS : unit;
 };
 
-TimerUnits.prototype.getUnitsString = function() {
+TimeUnits.prototype.getUnitsString = function() {
     return this._unitsString[this.unit];
 }
-TimerUnits.prototype.getCppTimeUnit = function() {
+TimeUnits.prototype.getCppTimeUnit = function() {
     return this._cppTimeUnit[this.unit];
 }
-TimerUnits.prototype.getMagnitudeFactor = function() {
+TimeUnits.prototype.getMagnitudeFactor = function() {
     return this._magnitudeFactor[this.unit];
 }
