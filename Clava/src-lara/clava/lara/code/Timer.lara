@@ -2,6 +2,7 @@ import lara.code.TimerBase;
 import lara.code.Logger;
 import lara.util.IdGenerator;
 import lara.util.Platforms;
+import clava.ClavaJoinPoints;
 
 /**
  * C++ std::chrono macros
@@ -71,11 +72,11 @@ Timer.prototype._time_cpp = function($start, prefix, $end) {
     var cppUnit = this._cpp_TimeUnit[this.unit];
 
     // Create literal node with calculation of time interval
-    $timingResult = AstFactory.exprLiteral(_timer_cpp_calc_interval(startVar, endVar, cppUnit));
+    $timingResult = ClavaJoinPoints.exprLiteral(_timer_cpp_calc_interval(startVar, endVar, cppUnit));
 
     // Declare variable for time interval, which uses calculation as initialization
     var timeIntervalVar = IdGenerator.next("clava_timing_duration_");
-    $timingResultDecl = AstFactory.varDecl(timeIntervalVar, $timingResult);
+    $timingResultDecl = ClavaJoinPoints.varDecl(timeIntervalVar, $timingResult);
 
     // Build message
     logger.append(prefix).appendDouble(timeIntervalVar);
@@ -131,8 +132,8 @@ Timer.prototype._time_c = function($start, prefix, $end) {
         codeAfter = _timer_c_windows_get_final_time(endVar);
 
         // Create literal node with calculation of time interval
-        $timingResult = AstFactory.exprLiteral(_timer_c_windows_calc_interval(startVar, endVar, frequencyVar));
-        $timingResultDecl = AstFactory.varDecl(timeIntervalVar, $timingResult);
+        $timingResult = ClavaJoinPoints.exprLiteral(_timer_c_windows_calc_interval(startVar, endVar, frequencyVar), ClavaJoinPoints.builtinType("double"));
+        $timingResultDecl = ClavaJoinPoints.varDecl(timeIntervalVar, $timingResult);
     } else if (Platforms.isLinux() || Platforms.isUnix()) {
 
     }
@@ -164,7 +165,6 @@ Timer.prototype._time_c = function($start, prefix, $end) {
 // Windows
 codedef _timer_c_windows_declare_vars_now(timeStartVar, timeEndVar, timeFrequencyVar)%{
 LARGE_INTEGER [[timeStartVar]], [[timeEndVar]], [[timeFrequencyVar]];
-double tempDeltaTime; 
 QueryPerformanceFrequency(&[[timeFrequencyVar]]);
 QueryPerformanceCounter(&[[timeStartVar]]);
 }%end
