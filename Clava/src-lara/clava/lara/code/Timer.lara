@@ -24,7 +24,10 @@ Timer.prototype.time = function($start, prefix, $end) {
 
     var $file = $start.ancestor('file');
 
-    if ($file.isCxx) {
+    if($file === undefined) {
+		println("Could not find the corresponding file of the given joinpoint: " + $jp);
+		return;
+	}else if ($file.isCxx) {
         this._time_cpp($start, prefix, $end);
     } else {
         this._time_c($start, prefix, $end);
