@@ -15,6 +15,7 @@ var Timer = function(unit, filename) {
  */
 Timer.prototype.setPrintUnit = function(printUnit) {
     this.printUnit = printUnit;
+    return this;
 }
 
 /**
