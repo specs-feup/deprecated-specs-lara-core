@@ -8,11 +8,12 @@ Energy.prototype.measureEnergy = function($start, $end, message){
 	if(!this._measureValidate($start, $end, 'function')){
 		return;
 	}
+	$end = $end === undefined?$start:$end;
 
 	// Message about dependency
 	PrintOnce.message("Weaved code has dependency to project SpecsRapl, which can be found at https://github.com/specs-feup/specs-c-libs");
 
-	var logger = new Logger(false, this.filename);
+	var logger = new Logger($start, this.filename);
 
 	// Build message
 	if(message === undefined) {
@@ -21,7 +22,7 @@ Energy.prototype.measureEnergy = function($start, $end, message){
 		if(name === undefined) {
 			message = "energy (J): ";
 		} else {
-			message = $start.joinpointType + " \"" + name + "\" energy (J): ";
+			message = $start.joinpointType + " \\\"" + name + "\\\" energy (J): ";
 		}
 	}
 
@@ -34,6 +35,8 @@ Energy.prototype.measureEnergy = function($start, $end, message){
 	}
 	$file.addInclude("rapl.h", false);
 	var energyVar = IdGenerator.next("clava_energy_output");
+
+
 
 	var codeBefore = _energy_rapl_start();
 	var codeAfter = _energy_rapl_end(energyVar);
