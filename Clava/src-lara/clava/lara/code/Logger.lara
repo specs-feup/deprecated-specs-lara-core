@@ -19,7 +19,7 @@ import clava.Clava;
 Logger.prototype.log = function($jp, insertBefore) {
 
 	if($jp === undefined) {
-		_warn("Given join point is undefined");
+		this._warn("Given join point is undefined");
 		return;
 	}
 
@@ -72,7 +72,7 @@ Logger.prototype._logSetup = function($jp, insertBefore) {
 	}
 
     if (this.currentElements.length === 0) {
-        _info("Nothing to log, call append() first");
+        this._info("Nothing to log, call append() first");
         return undefined;
     }
 
