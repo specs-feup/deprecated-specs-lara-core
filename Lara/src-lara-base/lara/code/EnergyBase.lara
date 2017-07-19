@@ -31,7 +31,7 @@ Energy.prototype._warn = function(message) {
  */
 Energy.prototype._measureValidate = function($start, $end, functionJpName) {
     if ($start === undefined) {
-        _warn("Energy: $start join point is undefined");
+        this._warn("Energy: $start join point is undefined");
         return false;
     }
 
@@ -51,8 +51,6 @@ Energy.prototype._measureValidate = function($start, $end, functionJpName) {
         }
 
         // TODO: Checking if it is the same function not implemented yet, requires attribute '$function.id'
-    }else{// If $end is undefined it is defined as the same jp as $start
-        $end = $start;
     }
 
     return true;

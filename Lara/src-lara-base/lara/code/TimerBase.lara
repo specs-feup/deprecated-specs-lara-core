@@ -27,7 +27,7 @@ Timer.prototype.setPrintUnit = function(printUnit) {
  */
 Timer.prototype._timeValidate = function($start, $end, functionJpName) {
     if ($start === undefined) {
-        _warn("Timer: $start join point is undefined");
+        this._warn("Timer: $start join point is undefined");
         return false;
     }
 
