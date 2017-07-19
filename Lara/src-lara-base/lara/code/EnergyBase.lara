@@ -14,8 +14,12 @@ var Energy = function(filename) {
  */
 Energy.prototype.setPrintUnit = function(printUnit) {
     this.printUnit = printUnit;
+    return this;
 }
 
+Energy.prototype.getPrintUnit = function() {
+    return "J";
+}
 
 Energy.prototype._warn = function(message) {
     println("[EnergyBase Warning] " + message);
