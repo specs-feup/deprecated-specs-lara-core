@@ -46,6 +46,8 @@ Energy.prototype._measureValidate = function($start, $end, functionJpName) {
         }
 
         // TODO: Checking if it is the same function not implemented yet, requires attribute '$function.id'
+    }else{// If $end is undefined it is defined as the same jp as $start
+        $end = $start;
     }
 
     return true;
