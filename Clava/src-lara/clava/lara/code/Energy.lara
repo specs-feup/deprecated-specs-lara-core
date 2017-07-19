@@ -3,7 +3,7 @@ import lara.code.Logger;
 import lara.util.IdGenerator;
 import lara.util.PrintOnce;
 
-Energy.prototype.measureEnergy = function($start, $end, message){
+Energy.prototype.measureEnergy = function($start, $end, prefix){
 	//Check for valid joinpoints and additional conditions
 	if(!this._measureValidate($start, $end, 'function')){
 		return;
@@ -15,15 +15,9 @@ Energy.prototype.measureEnergy = function($start, $end, message){
 
 	var logger = new Logger($start, this.filename);
 
-	// Build message
-	if(message === undefined) {
-		// Try to get a name
-		var name = $start.name;
-		if(name === undefined) {
-			message = "energy (J): ";
-		} else {
-			message = $start.joinpointType + " \\\"" + name + "\\\" energy (J): ";
-		}
+	// Build prefix
+	if(prefix === undefined) {
+		prefix = "";
 	}
 
 	
@@ -42,9 +36,10 @@ Energy.prototype.measureEnergy = function($start, $end, message){
 	var codeAfter = _energy_rapl_end(energyVar);
 	$start.insert("before", codeBefore);
 	
-	// Build message
-	logger.append(message).appendDouble(energyVar);
-			
+	logger.append(prefix).appendDouble(energyVar);
+	if (this.printUnit) {
+        logger.append(this.getPrintUnit());
+    }
 	logger.log($end);
 	$end.insert("after",codeAfter);
 
