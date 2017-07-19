@@ -1,9 +1,7 @@
+import lara.code.EnergyBase;
 import lara.code.Logger;
-import lara.code.Energy;
 import lara.util.IdGenerator;
 import lara.util.PrintOnce;
-
-
 
 Energy.prototype.measureEnergy = function($start, $end, message){
 	//Check for valid joinpoints and additional conditions
@@ -14,7 +12,7 @@ Energy.prototype.measureEnergy = function($start, $end, message){
 	// Message about dependency
 	PrintOnce.message("Weaved code has dependency to project SpecsRapl, which can be found at https://github.com/specs-feup/specs-c-libs");
 
-	var logger = new Logger(false, filename);
+	var logger = new Logger(false, this.filename);
 
 	// Build message
 	if(message === undefined) {
@@ -29,20 +27,23 @@ Energy.prototype.measureEnergy = function($start, $end, message){
 
 	
 	// Add include
-	$file = $jp.ancestor("file");
+	$file = $start.ancestor("file");
 	if($file === undefined) {
 		println("Could not find the corresponding file of the given joinpoint: " + $jp);
 		return;
 	}
 	$file.addInclude("rapl.h", false);
+	var energyVar = IdGenerator.next("clava_energy_output");
 
-	$jp.insert("before", _energy_rapl_start());
-		
+	var codeBefore = _energy_rapl_start();
+	var codeAfter = _energy_rapl_end(energyVar);
+	$start.insert("before", codeBefore);
+	
 	// Build message
 	logger.append(message).appendDouble(energyVar);
 			
 	logger.log($end);
-	$jp.insert("after", _energy_rapl_end(energyVar));
+	$end.insert("after",codeAfter);
 
 }
 
