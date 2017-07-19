@@ -1,0 +1,52 @@
+
+/**
+ * Class that measures the energy spent when executing a section of code.
+ */
+var Energy = function(filename) {
+    this.filename = filename;
+    this.printUnit = false;
+};
+
+/**
+ * If true, suffixes 'J' to the end of the value.
+ *
+ * @param printUnit boolean
+ */
+Energy.prototype.setPrintUnit = function(printUnit) {
+    this.printUnit = printUnit;
+}
+
+/**
+ * Verifies that join point start is not undefined, that it is inside a function.
+ * Additionally, if $end is not undefined, checks if it is inside the same function as $start.
+ *
+ * [Requires] global attribute 'ancestor'. 
+ *
+ * @return true if $start is a valid join point for the 'measure' function
+ */
+Energy.prototype._measureValidate = function($start, $end, functionJpName) {
+    if ($start === undefined) {
+        _warn("Energy: $start join point is undefined");
+        return false;
+    }
+
+    var $function = $start.ancestor(functionJpName);
+
+    if ($function === undefined) {
+        println("Energy: tried to measure energy at joinpoit " + $start + ", but it is not inside a function");
+        return false;
+    }
+
+    if ($end !== undefined) {
+        var $endFunction = $end.ancestor(functionJpName);
+
+        if ($endFunction === undefined) {
+            println("Energy: tried to end measuring energy at joinpoit " + $end + ", but it is not inside a function");
+            return false;
+        }
+
+        // TODO: Checking if it is the same function not implemented yet, requires attribute '$function.id'
+    }
+
+    return true;
+}
