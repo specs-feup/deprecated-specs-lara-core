@@ -16,6 +16,11 @@ Energy.prototype.setPrintUnit = function(printUnit) {
     this.printUnit = printUnit;
 }
 
+
+Energy.prototype._warn = function(message) {
+    println("[EnergyBase Warning] " + message);
+}
+
 /**
  * Verifies that join point start is not undefined, that it is inside a function.
  * Additionally, if $end is not undefined, checks if it is inside the same function as $start.
@@ -52,3 +57,5 @@ Energy.prototype._measureValidate = function($start, $end, functionJpName) {
 
     return true;
 }
+
+
