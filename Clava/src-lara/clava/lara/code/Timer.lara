@@ -178,9 +178,9 @@ codedef _timer_c_windows_calc_interval(timeStartVar, timeEndVar, timeFrequencyVa
 
 //Cpp codedefs
 codedef _timer_cpp_now(timeVar)%{
-std::chrono::high_resolution_clock::time_point[[timeVar]] = std::chrono::high_resolution_clock::now();
+std::chrono::high_resolution_clock::time_point [[timeVar]] = std::chrono::high_resolution_clock::now();
 }%end
 
 codedef _timer_cpp_calc_interval(startVar, endVar, unit)%{
-std::chrono::duration_cast < std::chrono::[[unit]] > ([[endVar]] - [[startVar]]).count()
+std::chrono::duration_cast<std::chrono::[[unit]]>([[endVar]] - [[startVar]]).count()
 }%end
