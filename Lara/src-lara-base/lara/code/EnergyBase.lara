@@ -38,6 +38,12 @@ Energy.prototype._measureValidate = function($start, $end, functionJpName) {
         this._warn("Energy: $start join point is undefined");
         return false;
     }
+	
+	var typeofStart = typeof $start;
+	if(typeofStart !== "object") {
+	    this._warn("Energy: $start should be an object, it is a " + typeofStart + " instead");
+        return false;
+	}
 
     var $function = $start.ancestor(functionJpName);
 
@@ -45,8 +51,15 @@ Energy.prototype._measureValidate = function($start, $end, functionJpName) {
         println("Energy: tried to measure energy at joinpoit " + $start + ", but it is not inside a function");
         return false;
     }
-
+	
     if ($end !== undefined) {
+		
+		var typeofEnd = typeof $end;
+		if(typeofEnd !== "object") {
+			this._warn("Energy: $end should be an object, it is a " + typeofEnd + " instead");
+			return false;
+		}
+		
         var $endFunction = $end.ancestor(functionJpName);
 
         if ($endFunction === undefined) {
