@@ -3,17 +3,20 @@ import lara.code.Logger;
 import lara.util.IdGenerator;
 import lara.util.PrintOnce;
 
-Energy.prototype.measureEnergy = function($start, $end, prefix){
+Energy.prototype.measure = function($start, prefix, $end){
 	//Check for valid joinpoints and additional conditions
+
 	if(!this._measureValidate($start, $end, 'function')){
 		return;
 	}
-	$end = $end === undefined?$start:$end;
+
+	
+	$end = $end === undefined ? $start : $end;
 
 	// Message about dependency
 	PrintOnce.message("Weaved code has dependency to project SpecsRapl, which can be found at https://github.com/specs-feup/specs-c-libs");
 
-	var logger = new Logger($start, this.filename);
+	var logger = new Logger(false, this.filename);
 
 	// Build prefix
 	if(prefix === undefined) {
@@ -28,7 +31,7 @@ Energy.prototype.measureEnergy = function($start, $end, prefix){
 		return;
 	}
 	$file.addInclude("rapl.h", false);
-	var energyVar = IdGenerator.next("clava_energy_output");
+	var energyVar = IdGenerator.next("clava_energy_output_");
 
 
 
