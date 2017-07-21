@@ -136,7 +136,14 @@ Timer.prototype._time_c = function($start, prefix, $end) {
 
     } else if (Platforms.isLinux()) {
         // Add includes
-        $file.addInclude("time.h", true);
+        $file.exec addInclude("time.h", true);
+		
+		// If C99 standard, needs define at the beginning of the file
+		// https://stackoverflow.com/questions/42597685/storage-size-of-timespec-isnt-known
+		if(Clava.getStandard() === "c99") {
+			$file.exec insertBegin("#define _POSIX_C_SOURCE 199309L");
+		}		
+	
 
         // get variable names
         var startVar = IdGenerator.next("clava_timing_start_");
