@@ -51,6 +51,13 @@ Logger.prototype._clear = function() {
 }
 
 /**
+ * Helper method which call 'log' with 'insertBefore' set to true
+ */
+Logger.prototype.logBefore = function($jp) {
+	this.log($jp, true);
+}
+
+/**
  * Verifies that the given $jp is inside a function.
  *
  * Requires global attribute 'ancestor'. 
